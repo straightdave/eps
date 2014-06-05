@@ -1,5 +1,11 @@
+Hi <%= $name %>
 
+Please buy me the following items:
 <% 1..10 | %{ %>
-  <%= $_ %> pigs...
+  - <%= $_ %> pigs...
 <% } %>
+
+Thanks,
+Dave
+<% get-date -f yyyy-MM-dd %>
 
