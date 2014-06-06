@@ -1,5 +1,8 @@
 function Compile-Raw{
-  param([string]$raw)  
+  param(
+  [string]$raw,
+  [switch]$debug = $false
+  )  
 
   #========================
   # constants
@@ -28,31 +31,35 @@ function Compile-Raw{
   while($m.success){
     $content = $m.groups["content"].value
     $token = $m.groups["token"].value
-        
+    
+    # escaping characters
+    $content = $content -replace '"','`"'
+    
     if($stag -eq ''){
       switch($token){
         { $_ -in '<%', '<%=', '<%#'} {
-          $stag = $token
-          if( $content -ne '') { $line += ($put_cmd + '"' + $content + '"') }
-          $content = ''
+          $stag = $token          
         }
         
         "`n" {
           if( -not $w ) { 
             $content += '`n'
           }
-          $line += ($put_cmd + '"' + $content + '"')
-          $content = ''
         }
         
         '<%%' {
           $content += '<%'
         }
         
+        '%%>' {
+          $content += '%>'
+        }
+        
         default {
           $content += $token
         }
       }
+      
       $w = $false
     } 
     else{
@@ -65,18 +72,14 @@ function Compile-Raw{
             }
             
             '<%=' {
-              $line += ($insert_cmd + '"' + $content.trim() + '"' )
+              $line += ($insert_cmd + '"' + $content.trim() + '"')
             }
             
-            '<%#' { }            
+            '<%#' { }
           }
           
           $stag = ''
           $content = ''
-        }
-        
-        '%%>' {
-          $content += '%>'
         }
         
         default {
@@ -84,21 +87,24 @@ function Compile-Raw{
         }
       }
     }
-  
+    
+    if( $content -ne '') { $line += ($put_cmd + '"' + $content + '"') }
     $m = $m.nextMatch()
   }
   
-  if( $content -ne '' ) { $line += ($put_cmd + '"' + $content + '"') }
   $post_cmd | %{ $line += $_ }
-      
   $script = ($line -join ';')
+  
+  if($debug) {
+    return $line
+  }
+  
   $line = $null
   return $script
 }
 
+#$tt = gc .\test.eps
+#$tt = $tt -join "`n"
 
-$tt = gc .\test.eps
-$tt = $tt -join "`n"
-
-$result = Compile-Raw($tt)
-$result
+#$result = Compile-Raw $tt
+#$result
