@@ -12,7 +12,7 @@ It's crazy to create templating for PowerShell
 current issue(s)
 
 + cannot recognize '<%%' and '%%>'
-+ if whole line is one command, need to neglect its new-line synbol
++ ~~if whole line is one command, need to neglect its new-line synbol~~
 
 
 
