@@ -16,6 +16,7 @@ function Compile-Raw{
   $content = ''
   $stag = ''  # start tag
   $line = @()
+  $w = $false # whether last tag-pair is <% %>
   
   #========================
   # start!
@@ -37,7 +38,9 @@ function Compile-Raw{
         }
         
         "`n" {
-          $content += '`n'
+          if( -not $w ) { 
+            $content += '`n'
+          }
           $line += ($put_cmd + '"' + $content + '"')
           $content = ''
         }
@@ -50,20 +53,22 @@ function Compile-Raw{
           $content += $token
         }
       }
+      $w = $false
     } 
     else{
       switch($token){
-        '%>' {
+        '%>' {          
           switch($stag){
             '<%' {
-              $line += $content            
+              $line += $content
+              $w = $true
             }
             
             '<%=' {
               $line += ($insert_cmd + '"' + $content.trim() + '"' )
             }
             
-            '<%#' {}
+            '<%#' { }            
           }
           
           $stag = ''
