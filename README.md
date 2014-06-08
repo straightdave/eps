@@ -30,6 +30,23 @@ $script = Compile-Raw $text
 iex $script
 ```
 
+It will produce:
+```
+Hi ABC
+
+Please buy me the following items:
+  - 1 pigs ...
+  - 2 pigs ...
+  - 3 pigs ...
+  - 4 pigs ...
+  - 5 pigs ...
+
+Dave is a boy.
+
+Thanks,
+Dave
+2014-06-09
+```
 
 ## Log
 
@@ -48,3 +65,4 @@ eyaswoo@163.com
 ## TODO
 + html and url encoding
 + parameter context
++ other usability improvements
