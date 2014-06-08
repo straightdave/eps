@@ -38,6 +38,49 @@
 
 <p>It's crazy to create templating for PowerShell</p>
 
+<p>test.eps:</p>
+
+<pre><code>Hi &lt;%= $name %&gt;
+
+Please buy me the following items:
+&lt;% 1..5 | %{ %&gt;
+  - &lt;%= $_ %&gt; pigs ...
+&lt;% } %&gt;
+
+Dave is a &lt;% if($true) { %&gt; boy &lt;% } else { %&gt; girl &lt;% } %&gt;. 
+
+Thanks,
+Dave
+&lt;%= (Get-Date -f yyyy-MM-dd) %&gt;
+</code></pre>
+
+<p>commands:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$text</span> <span class="p">=</span> <span class="n">gc</span> <span class="p">.\</span><span class="n">test</span><span class="p">.</span><span class="n">eps</span>
+<span class="nv">$text</span> <span class="p">=</span> <span class="nv">$text</span> <span class="n">-join</span> <span class="s2">"</span><span class="se">`n</span><span class="s2">"</span>
+<span class="nv">$name</span> <span class="p">=</span> <span class="s2">"ABC"</span>
+<span class="nv">$script</span> <span class="p">=</span> <span class="n">Compile-Raw</span> <span class="nv">$text</span>
+<span class="n">iex</span> <span class="nv">$script</span>
+</pre></div>
+
+<p>It will produce:</p>
+
+<pre><code>Hi ABC
+
+Please buy me the following items:
+  - 1 pigs ...
+  - 2 pigs ...
+  - 3 pigs ...
+  - 4 pigs ...
+  - 5 pigs ...
+
+Dave is a boy.
+
+Thanks,
+Dave
+2014-06-09
+</code></pre>
+
 <h2>
 <a name="log" class="anchor" href="#log"><span class="octicon octicon-link"></span></a>Log</h2>
 
@@ -65,6 +108,7 @@
 <ul>
 <li>html and url encoding</li>
 <li>parameter context</li>
+<li>other usability improvements</li>
 </ul>
         </section>
 
