@@ -11,6 +11,79 @@
 
 $execPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
 
+## EPS-Render:
+##   Key entrance of EPS
+##   Safe mode: start a new/isolated PowerShell instance to compile the templates 
+##   to prevent result from being polluted by variables in current context
+##   With Safe mode: you can pass a hashtable containing all variables to this function. 
+##   Compiling process will inject values recorded in hashtable to template
+##
+## Examples:
+##   - EPS-Render $text
+##     will use current context to fill variables in template. If no '$name' exists in current context, it will produce blanks.
+##   - EPS-Render $text -safe -binding @{ name = "dave" }
+##     will use "dave" to render the placeholder "<%= $name %>" in template
+##
+## Full example:
+##   $text = gc .\test.eps
+##   $text = $tt -join "`n"
+##   $result = EPS-Render $text -safe -binding @{ name = "dave" }
+##
+##   or
+##
+##   $text = '"
+##   Dave is a <% if($true){ %>man<% }else{ %>lady<% } %>.
+##   Davie is <%= $age %>.
+##   '@
+##   
+##   $age = 26
+##   $result = EPS-Render $text
+##
+function EPS-Render{
+  param(
+  [string]$template,
+  [hashtable]$binding = @{},
+  [switch]$safe
+  )
+  
+  if($safe){
+    $p = [powershell]::create()
+    
+    $block = {
+      param(
+      $temp,
+      $libpath,
+      $binding = @{}    # variable binding
+      )
+      
+      . $libpath\eps.ps1   # load Compile-Raw
+
+      $binding.keys | %{ nv -Name $_ -Value $binding[$_] }     
+      
+      $script = Compile-Raw $temp      
+      $res = iex $script
+      write-output $res
+    }
+    
+    [void]$p.addscript($block)
+    [void]$p.addparameter("temp",$template)
+    [void]$p.addparameter("libpath",$execPath)
+    [void]$p.addparameter("binding",$binding)
+    $result = $p.invoke()
+    return $result
+  }
+  else{
+    $script = Compile-Raw $template
+    $result = iex $script
+    return $result
+  }
+}
+
+## Compile-Raw:
+##   Used internally. To comiple templates into text
+##   Input parameter '$raw' should be a [string] type.
+##   So if reading from a file via 'gc/get-content' cmdlet, 
+##   you should join all lines together with new-line ("`n") as delimiters
 function Compile-Raw{
   param(
   [string]$raw,
@@ -116,43 +189,3 @@ function Compile-Raw{
   $line = $null
   return $script
 }
-
-
-## EPS-Render:
-##   Key entrance of EPS
-##   Safe mode: start a new PowerShell instance to compile the templates to prevent result from being polluted by variables in current context
-function EPS-Render{
-  param(
-  [string]$template,
-  [switch]$safe
-  )
-  
-  if($safe){
-    $p = [powershell]::create()
-    
-    $block = {
-      param($temp,$libpath)      
-      . $libpath\eps.ps1   # load Compile-Raw
-      $script = Compile-Raw $temp      
-      $res = iex $script
-      write-output $res
-    }
-    
-    [void]$p.addscript($block)
-    [void]$p.addparameter("temp",$template)
-    [void]$p.addparameter("libpath",$execPath)
-    $result = $p.invoke()
-    return $result
-  }
-  else{
-    $script = Compile-Raw $template
-    $result = iex $script
-    return $result
-  }
-}
-
-#$text = gc .\test.eps
-#$text = $tt -join "`n"  # combine to one string with new-line characters as delimiters
-
-#$result = EPS-Render $text -safe
-#$result
