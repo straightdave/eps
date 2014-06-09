@@ -31,7 +31,7 @@ $execPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
 ##
 ##   or
 ##
-##   $text = '"
+##   $text = '
 ##   Dave is a <% if($true){ %>man<% }else{ %>lady<% } %>.
 ##   Davie is <%= $age %>.
 ##   '@
