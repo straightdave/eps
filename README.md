@@ -28,6 +28,8 @@ Dave
 
 Then type some commands:
 ```powershell
+. .\eps.ps1  # don't forget to load
+
 $text = gc .\test.eps
 $text = $text -join "`n"
 $name = "ABC"
