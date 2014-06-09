@@ -32,11 +32,18 @@
 
         <section id="main_content">
           <h1>
-<a name="eps" class="anchor" href="#eps"><span class="octicon octicon-link"></span></a>eps</h1>
+<a name="eps" class="anchor" href="#eps"><span class="octicon octicon-link"></span></a>EPS</h1>
 
-<p>Embedded PowerShell (similar to ERB)</p>
+<p>EPS (Embedded PowerShell), inspired by erb, is a templating system that embeds PowerShell code into a text document. It is often used to embed PowerShell code in an HTML document, similar to ASP, JSP and PHP.<br>
+The most common use that the author can image is to render reports based on HTML pages (on Windows platforms). Or it may works for a rails-like or sinatra-like framework that somebody creates for PowerShell.</p>
 
-<p>It's crazy to create templating for PowerShell</p>
+<h3>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h3>
+
+<p>EPS allows PowerShell code to be embedded within a pair of &lt;% and %&gt;, or &lt;%= and %&gt;, etc. delimiters. These embedded code blocks are then evaluated in-place (they are replaced by the result of their evaluation).<br>
+Code in &lt;% %&gt; delimiters will be treated as expressions or commands which help to generate text; Code in &lt;%= %&gt; delimiters is treated as values; Text in &lt;%# %&gt; delimiters will be treated as comments which is ignored in compiling process.</p>
+
+<p>Here's the example:</p>
 
 <p>test.eps:</p>
 
@@ -54,7 +61,7 @@ Dave
 &lt;%= (Get-Date -f yyyy-MM-dd) %&gt;
 </code></pre>
 
-<p>commands:</p>
+<p>Then type some commands:</p>
 
 <div class="highlight highlight-powershell"><pre><span class="nv">$text</span> <span class="p">=</span> <span class="n">gc</span> <span class="p">.\</span><span class="n">test</span><span class="p">.</span><span class="n">eps</span>
 <span class="nv">$text</span> <span class="p">=</span> <span class="nv">$text</span> <span class="n">-join</span> <span class="s2">"</span><span class="se">`n</span><span class="s2">"</span>
@@ -81,13 +88,14 @@ Dave
 2014-06-09
 </code></pre>
 
-<h2>
-<a name="log" class="anchor" href="#log"><span class="octicon octicon-link"></span></a>Log</h2>
+<p><em>NOTE:</em>
+The sample above is just for current version. It has much space to improve.</p>
+
+<h3>
+<a name="log" class="anchor" href="#log"><span class="octicon octicon-link"></span></a>Log</h3>
 
 <h4>
 <a name="june-5-2014" class="anchor" href="#june-5-2014"><span class="octicon octicon-link"></span></a>June 5, 2014</h4>
-
-<p>current issue(s)</p>
 
 <ul>
 <li><del>cannot recognize '&lt;%%' and '%%&gt;'</del></li>
@@ -95,21 +103,19 @@ Dave
 </ul><h4>
 <a name="jun-6-2014" class="anchor" href="#jun-6-2014"><span class="octicon octicon-link"></span></a>Jun 6, 2014</h4>
 
-<p>fixed two issues, </p>
+<p>fixed two issues</p>
 
-<h2>
-<a name="please-help-to-find-more-bugs" class="anchor" href="#please-help-to-find-more-bugs"><span class="octicon octicon-link"></span></a>Please help to find more bugs</h2>
-
-<p><a href="mailto:eyaswoo@163.com">eyaswoo@163.com</a></p>
-
-<h2>
-<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h2>
+<p>TODO list:</p>
 
 <ul>
 <li>html and url encoding</li>
 <li>parameter context</li>
 <li>other usability improvements</li>
-</ul>
+</ul><h2>
+<a name="contribute" class="anchor" href="#contribute"><span class="octicon octicon-link"></span></a>Contribute</h2>
+
+<p>Please try out and help to find more bugs!
+Author email: <a href="mailto:eyaswoo@163.com">eyaswoo@163.com</a></p>
         </section>
 
         <footer>
