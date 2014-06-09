@@ -13,6 +13,7 @@ test.eps:
 ```
 Hi <%= $name %>
 
+<%# this is a comment %>
 Please buy me the following items:
 <% 1..5 | %{ %>
   - <%= $_ %> pigs ...
@@ -31,8 +32,9 @@ $text = gc .\test.eps
 $text = $text -join "`n"
 $name = "ABC"
 EPS-Render $text
-# user 'EPS-Render $text -safe' can compile in another PowerShell instance
-# to avoid variable polluted by current context
+# here it uses non-safe mode
+# To use safe mode: using 'EPS-Render $text -safe' can compile in another PowerShell instance
+# to avoid variables polluted by current context
 ```
 
 It will produce:
@@ -51,6 +53,13 @@ Dave is a boy.
 Thanks,
 Dave
 2014-06-09
+```
+
+Or you can use safe mode with data bindings:
+```powershell
+$text = gc .\test.eps
+$text = $text -join "`n"
+EPS-Render $text -safe -binding @{ name = "dave" }
 ```
 
 _NOTE:_
