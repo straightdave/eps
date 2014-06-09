@@ -30,8 +30,9 @@ Then type some commands:
 $text = gc .\test.eps
 $text = $text -join "`n"
 $name = "ABC"
-$script = Compile-Raw $text
-iex $script
+EPS-Render $text
+# user 'EPS-Render $text -safe' can compile in another PowerShell instance
+# to avoid variable polluted by current context
 ```
 
 It will produce:
@@ -67,11 +68,11 @@ fixed two issues
 
 TODO list:
 + html and url encoding
-+ parameter context
++ ~~parameter context~~
 + other usability improvements
 
 
 ## Contribute
-Please try out and help to find more bugs!
+Please try out and help to find more bugs! 
 Author email: eyaswoo@163.com
 
