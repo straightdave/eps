@@ -19,7 +19,7 @@
 
         <header>
           <h1>EPS</h1>
-          <h2>Embedded PowerShell (similar to ERB)</h2>
+          <h2>Embedded PowerShell (Templating tool for PowerShell)</h2>
         </header>
 
         <section id="downloads" class="clearfix">
@@ -49,6 +49,7 @@ Code in &lt;% %&gt; delimiters will be treated as expressions or commands which 
 
 <pre><code>Hi &lt;%= $name %&gt;
 
+&lt;%# this is a comment %&gt;
 Please buy me the following items:
 &lt;% 1..5 | %{ %&gt;
   - &lt;%= $_ %&gt; pigs ...
@@ -66,8 +67,10 @@ Dave
 <div class="highlight highlight-powershell"><pre><span class="nv">$text</span> <span class="p">=</span> <span class="n">gc</span> <span class="p">.\</span><span class="n">test</span><span class="p">.</span><span class="n">eps</span>
 <span class="nv">$text</span> <span class="p">=</span> <span class="nv">$text</span> <span class="n">-join</span> <span class="s2">"</span><span class="se">`n</span><span class="s2">"</span>
 <span class="nv">$name</span> <span class="p">=</span> <span class="s2">"ABC"</span>
-<span class="nv">$script</span> <span class="p">=</span> <span class="n">Compile-Raw</span> <span class="nv">$text</span>
-<span class="n">iex</span> <span class="nv">$script</span>
+<span class="n">EPS-Render</span> <span class="nv">$text</span>
+<span class="c"># here it uses non-safe mode</span>
+<span class="c"># To use safe mode: using 'EPS-Render $text -safe' can compile in another PowerShell instance</span>
+<span class="c"># to avoid variables polluted by current context</span>
 </pre></div>
 
 <p>It will produce:</p>
@@ -87,6 +90,13 @@ Thanks,
 Dave
 2014-06-09
 </code></pre>
+
+<p>Or you can use safe mode with data bindings:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$text</span> <span class="p">=</span> <span class="n">gc</span> <span class="p">.\</span><span class="n">test</span><span class="p">.</span><span class="n">eps</span>
+<span class="nv">$text</span> <span class="p">=</span> <span class="nv">$text</span> <span class="n">-join</span> <span class="s2">"</span><span class="se">`n</span><span class="s2">"</span>
+<span class="n">EPS-Render</span> <span class="nv">$text</span> <span class="n">-safe</span> <span class="n">-binding</span> <span class="p">@{</span> <span class="n">name</span> <span class="p">=</span> <span class="s2">"dave"</span> <span class="p">}</span>
+</pre></div>
 
 <p><em>NOTE:</em>
 The sample above is just for current version. It has much space to improve.</p>
@@ -109,12 +119,12 @@ The sample above is just for current version. It has much space to improve.</p>
 
 <ul>
 <li>html and url encoding</li>
-<li>parameter context</li>
+<li><del>parameter context</del></li>
 <li>other usability improvements</li>
 </ul><h2>
 <a name="contribute" class="anchor" href="#contribute"><span class="octicon octicon-link"></span></a>Contribute</h2>
 
-<p>Please try out and help to find more bugs!
+<p>Please try out and help to find more bugs! 
 Author email: <a href="mailto:eyaswoo@163.com">eyaswoo@163.com</a></p>
         </section>
 
