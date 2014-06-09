@@ -1,8 +1,21 @@
+#######################################################
+##
+##  EPS - Embedded PowerShell
+##  Dave Wu, June 2014
+##
+##  Templating tool for PowerShell
+##  For detailed usage please refer to:
+##  http://straightdave.github.io/eps
+##
+#######################################################
+
+$execPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+
 function Compile-Raw{
   param(
   [string]$raw,
   [switch]$debug = $false
-  )  
+  )
 
   #========================
   # constants
@@ -104,8 +117,42 @@ function Compile-Raw{
   return $script
 }
 
-#$tt = gc .\test.eps
-#$tt = $tt -join "`n"
 
-#$result = Compile-Raw $tt
+## EPS-Render:
+##   Key entrance of EPS
+##   Safe mode: start a new PowerShell instance to compile the templates to prevent result from being polluted by variables in current context
+function EPS-Render{
+  param(
+  [string]$template,
+  [switch]$safe
+  )
+  
+  if($safe){
+    $p = [powershell]::create()
+    
+    $block = {
+      param($temp,$libpath)      
+      . $libpath\eps.ps1   # load Compile-Raw
+      $script = Compile-Raw $temp      
+      $res = iex $script
+      write-output $res
+    }
+    
+    [void]$p.addscript($block)
+    [void]$p.addparameter("temp",$template)
+    [void]$p.addparameter("libpath",$execPath)
+    $result = $p.invoke()
+    return $result
+  }
+  else{
+    $script = Compile-Raw $template
+    $result = iex $script
+    return $result
+  }
+}
+
+#$text = gc .\test.eps
+#$text = $tt -join "`n"  # combine to one string with new-line characters as delimiters
+
+#$result = EPS-Render $text -safe
 #$result
