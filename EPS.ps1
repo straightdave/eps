@@ -9,7 +9,7 @@
 ##
 #######################################################
 
-$execPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+$execPath = $MyInvocation.MyCommand.Definition
 
 ## EPS-Render:
 ##   Key entrance of EPS
@@ -56,7 +56,7 @@ function EPS-Render{
       $binding = @{}    # variable binding
       )
       
-      . $libpath\eps.ps1   # load Compile-Raw
+      . $libpath   # load Compile-Raw
 
       $binding.keys | %{ nv -Name $_ -Value $binding[$_] }     
       
