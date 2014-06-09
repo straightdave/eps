@@ -32,10 +32,11 @@ function Compile-Raw{
     $content = $m.groups["content"].value
     $token = $m.groups["token"].value
     
-    # escaping characters
-    $content = $content -replace '"','`"'
-    
     if($stag -eq ''){
+      
+      # escaping characters
+      $content = $content -replace '"','`"'
+    
       switch($token){
         { $_ -in '<%', '<%=', '<%#'} {
           $stag = $token          
