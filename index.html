@@ -64,7 +64,9 @@ Dave
 
 <p>Then type some commands:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="nv">$text</span> <span class="p">=</span> <span class="n">gc</span> <span class="p">.\</span><span class="n">test</span><span class="p">.</span><span class="n">eps</span>
+<div class="highlight highlight-powershell"><pre><span class="p">.</span> <span class="p">.\</span><span class="n">eps</span><span class="p">.</span><span class="n">ps1</span>  <span class="c"># don't forget to load</span>
+
+<span class="nv">$text</span> <span class="p">=</span> <span class="n">gc</span> <span class="p">.\</span><span class="n">test</span><span class="p">.</span><span class="n">eps</span>
 <span class="nv">$text</span> <span class="p">=</span> <span class="nv">$text</span> <span class="n">-join</span> <span class="s2">"</span><span class="se">`n</span><span class="s2">"</span>
 <span class="nv">$name</span> <span class="p">=</span> <span class="s2">"ABC"</span>
 <span class="n">EPS-Render</span> <span class="nv">$text</span>
@@ -102,26 +104,70 @@ Dave
 The sample above is just for current version. It has much space to improve.</p>
 
 <h3>
-<a name="log" class="anchor" href="#log"><span class="octicon octicon-link"></span></a>Log</h3>
-
-<h4>
-<a name="june-5-2014" class="anchor" href="#june-5-2014"><span class="octicon octicon-link"></span></a>June 5, 2014</h4>
+<a name="more-examples-and-notes" class="anchor" href="#more-examples-and-notes"><span class="octicon octicon-link"></span></a>More examples and notes</h3>
 
 <ul>
-<li><del>cannot recognize '&lt;%%' and '%%&gt;'</del></li>
-<li><del>if whole line is one command, need to neglect its new-line synbol</del></li>
-</ul><h4>
-<a name="jun-6-2014" class="anchor" href="#jun-6-2014"><span class="octicon octicon-link"></span></a>Jun 6, 2014</h4>
+<li>any result from a <code>&lt;% %&gt;</code> pair will be placed at the top</li>
+</ul><div class="highlight highlight-powershell"><pre><span class="nv">$template</span> <span class="p">=</span> <span class="sh">@'</span>
+<span class="sh">Hi, dave is a &lt;% if($true) { "boy" } else { "girl" } %&gt;</span>
+<span class="sh">'@</span>
+</pre></div>
 
-<p>fixed two issues</p>
+<p>will produce:</p>
 
-<p>TODO list:</p>
+<pre><code>boy
+Hi, dave is a 
+</code></pre>
+
+<p>also,</p>
+
+<pre><code>Hi dave
+Don't watch TV.
+
+Your wife
+&lt;% get-date -f yyyy-MM-dd %&gt;
+</code></pre>
+
+<p>will produce:</p>
+
+<pre><code>2014-06-10
+Hi dave
+Don't watch TV.
+
+Your wife
+</code></pre>
 
 <ul>
-<li>html and url encoding</li>
-<li><del>parameter context</del></li>
-<li>other usability improvements</li>
-</ul><h2>
+<li>you can use multi-line &lt;% %&gt; block
+such as:</li>
+</ul><div class="highlight highlight-powershell"><pre><span class="nv">$template</span> <span class="p">=</span> <span class="sh">@'</span>
+
+<span class="sh">&lt;%</span>
+<span class="sh">  $name = "dave"</span>
+
+<span class="sh">  1..5 | %{</span>
+<span class="sh">    "haha"</span>
+<span class="sh">  }</span>
+<span class="sh">%&gt;</span>
+
+<span class="sh">Hello, I'm &lt;%= $name %&gt;.</span>
+<span class="sh">'@</span>
+</pre></div>
+
+<p>will produce:</p>
+
+<pre><code>haha
+haha
+haha
+haha
+haha
+
+Hello, I'm dave.
+</code></pre>
+
+<p>Remember if you add variables in the template directly, they will be used in that template.</p>
+
+<h2>
 <a name="contribute" class="anchor" href="#contribute"><span class="octicon octicon-link"></span></a>Contribute</h2>
 
 <p>Please try out and help to find more bugs! 
