@@ -169,6 +169,13 @@ function Compile-Raw{
           $content = ''
         }
         
+        "`n" {
+          if($stag -eq '<%' -and $content -ne ''){            
+            $line += $content
+          }
+          $content = ''
+        }
+        
         default {
           $content += $token
         }
