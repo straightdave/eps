@@ -67,20 +67,54 @@ EPS-Render $text -safe -binding @{ name = "dave" }
 _NOTE:_
 The sample above is just for current version. It has much space to improve.
 
+### More examples and notes
++ any result from a ```<% %>``` pair will be placed at the top
 
-### Log
+```powershell
+$template = @'
+Hi, dave is a <% if($true) { "boy" } else { "girl" } %>
+```
+will produce:
+```
+boy
+Hi, dave is a 
+```
 
-#### June 5, 2014
-+ ~~cannot recognize '<%%' and '%%>'~~
-+ ~~if whole line is one command, need to neglect its new-line synbol~~
+also,
+```
+Hi dave
+Don't watch TV.
 
-#### Jun 6, 2014
-fixed two issues
+Your wife
+<% get-date -f yyyy-MM-dd %>
+```
+will produce:
+````
+2014-06-10
+Hi dave
+Don't watch TV.
 
-TODO list:
-+ html and url encoding
-+ ~~parameter context~~
-+ other usability improvements
+Your wife
+```
+
++ you can use multi-line <% %> block
+such as:
+```powershell
+$template = @'
+
+<%
+  $name = "dave"
+  
+  1..5 | %{
+    "haha"
+  }
+%>
+
+Hello, I'm bob.
+```
+Remember if you add variables in the template directly, they will be used in that template.
+
+
 
 
 ## Contribute
