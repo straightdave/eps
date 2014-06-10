@@ -73,6 +73,7 @@ The sample above is just for current version. It has much space to improve.
 ```powershell
 $template = @'
 Hi, dave is a <% if($true) { "boy" } else { "girl" } %>
+'@
 ```
 will produce:
 ```
@@ -110,8 +111,20 @@ $template = @'
   }
 %>
 
-Hello, I'm bob.
+Hello, I'm <%= $name %>.
+'@
 ```
+will produce:
+```
+haha
+haha
+haha
+haha
+haha
+
+Hello, I'm dave.
+```
+
 Remember if you add variables in the template directly, they will be used in that template.
 
 
