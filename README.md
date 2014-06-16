@@ -64,9 +64,6 @@ $text = $text -join "`n"
 EPS-Render $text -safe -binding @{ name = "dave" }
 ```
 
-_NOTE:_
-The sample above is just for current version. It has much space to improve.
-
 ### More examples and notes
 + any result from a ```<% %>``` pair will be placed at the top
 
@@ -74,6 +71,8 @@ The sample above is just for current version. It has much space to improve.
 $template = @'
 Hi, dave is a <% if($true) { "boy" } else { "girl" } %>
 '@
+
+EPS-Render $template
 ```
 will produce:
 ```
@@ -81,7 +80,7 @@ boy
 Hi, dave is a 
 ```
 
-also,
+also, if template is
 ```
 Hi dave
 Don't watch TV.
@@ -97,6 +96,9 @@ Don't watch TV.
 
 Your wife
 ```
+_NOTE_
+```<%= $(get-date -f yyyy-MM-dd) %>``` produces the date string at the same place.
+
 
 + you can use multi-line <% %> block
 such as:
@@ -113,6 +115,8 @@ $template = @'
 
 Hello, I'm <%= $name %>.
 '@
+
+EPS-Render $template
 ```
 will produce:
 ```
