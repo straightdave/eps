@@ -38,6 +38,9 @@ EPS-Render $text
 # To use safe mode: using 'EPS-Render $text -safe' can compile in another PowerShell instance
 # to avoid variables polluted by current context
 ```
+_NOTE_<br/>
+__EPS-Render__ accepts a string as inputted template. ```$text``` here is an array so it needs to be concated with ```"`n"```.<br/>
+In the following samples you'll see some input are in a ```@' '@``` block which is a string.
 
 It will produce:
 ```
@@ -96,7 +99,7 @@ Don't watch TV.
 
 Your wife
 ```
-_NOTE_
+_NOTE_<br/>
 ```<%= $(get-date -f yyyy-MM-dd) %>``` produces the date string at the same place.
 
 
