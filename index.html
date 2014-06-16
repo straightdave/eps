@@ -75,6 +75,9 @@ Dave
 <span class="c"># to avoid variables polluted by current context</span>
 </pre></div>
 
+<p><em>NOTE</em><br><strong>EPS-Render</strong> accepts a string as inputted template. <code>$text</code> here is an array so it needs to be concated with <code>"`n"</code>.<br>
+In the following samples you'll see some input are in a <code>@' '@</code> block which is a string.</p>
+
 <p>It will produce:</p>
 
 <pre><code>Hi ABC
@@ -100,9 +103,6 @@ Dave
 <span class="n">EPS-Render</span> <span class="nv">$text</span> <span class="n">-safe</span> <span class="n">-binding</span> <span class="p">@{</span> <span class="n">name</span> <span class="p">=</span> <span class="s2">"dave"</span> <span class="p">}</span>
 </pre></div>
 
-<p><em>NOTE:</em>
-The sample above is just for current version. It has much space to improve.</p>
-
 <h3>
 <a name="more-examples-and-notes" class="anchor" href="#more-examples-and-notes"><span class="octicon octicon-link"></span></a>More examples and notes</h3>
 
@@ -111,6 +111,8 @@ The sample above is just for current version. It has much space to improve.</p>
 </ul><div class="highlight highlight-powershell"><pre><span class="nv">$template</span> <span class="p">=</span> <span class="sh">@'</span>
 <span class="sh">Hi, dave is a &lt;% if($true) { "boy" } else { "girl" } %&gt;</span>
 <span class="sh">'@</span>
+
+<span class="n">EPS-Render</span> <span class="nv">$template</span>
 </pre></div>
 
 <p>will produce:</p>
@@ -119,7 +121,7 @@ The sample above is just for current version. It has much space to improve.</p>
 Hi, dave is a 
 </code></pre>
 
-<p>also,</p>
+<p>also, if template is</p>
 
 <pre><code>Hi dave
 Don't watch TV.
@@ -137,6 +139,8 @@ Don't watch TV.
 Your wife
 </code></pre>
 
+<p><em>NOTE</em><br><code>&lt;%= $(get-date -f yyyy-MM-dd) %&gt;</code> produces the date string at the same place.</p>
+
 <ul>
 <li>you can use multi-line &lt;% %&gt; block
 such as:</li>
@@ -152,6 +156,8 @@ such as:</li>
 
 <span class="sh">Hello, I'm &lt;%= $name %&gt;.</span>
 <span class="sh">'@</span>
+
+<span class="n">EPS-Render</span> <span class="nv">$template</span>
 </pre></div>
 
 <p>will produce:</p>
