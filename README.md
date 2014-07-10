@@ -4,8 +4,10 @@ EPS (Embedded PowerShell), inspired by erb, is a templating system that embeds P
 The most common use that the author can image is to render reports based on HTML pages (on Windows platforms). Or it may works for a rails-like or sinatra-like framework that somebody creates for PowerShell.
 
 ### Usage
-EPS allows PowerShell code to be embedded within a pair of <% and %>, or <%= and %>, etc. delimiters. These embedded code blocks are then evaluated in-place (they are replaced by the result of their evaluation).<br/>
-Code in <% %> delimiters will be treated as expressions or commands which help to generate text; Code in <%= %> delimiters is treated as values; Text in <%# %> delimiters will be treated as comments which is ignored in compiling process.
+EPS allows PowerShell code to be embedded within a pair of `<%` and `%>`, or `<%=` and `%>`, or other delimiters. These embedded code blocks are then evaluated in-place (they are replaced by the result of their evaluation).<br/>
+Code in `<% %>` delimiters will be treated as expressions or commands which help to generate text;<br/>
+Code in `<%= %>` delimiters is treated as values;<br/>
+Text in `<%# %>` delimiters is treated as comment which is ignored in compiling process.<br/>
 
 Here's the example:
 
@@ -135,9 +137,6 @@ Hello, I'm dave.
 Remember if you add variables in the template directly, they will be used in that template.
 
 
-
-
 ## Contribute
 Please try out and help to find more bugs! 
-Author email: eyaswoo@163.com
-
+Author's email: eyaswoo@163.com
