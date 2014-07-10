@@ -12,6 +12,7 @@
 $execPath = $MyInvocation.MyCommand.Definition
 
 ## EPS-Render:
+##
 ##   Key entrance of EPS
 ##   Safe mode: start a new/isolated PowerShell instance to compile the templates 
 ##   to prevent result from being polluted by variables in current context
@@ -28,10 +29,12 @@ $execPath = $MyInvocation.MyCommand.Definition
 ##   $text = gc .\test.eps
 ##   $text = $tt -join "`n"
 ##   $result = EPS-Render $text -safe -binding @{ name = "dave" }
+##   *Note*: text read from a text file is not a string but a list/array. 
+##           so it needs to join all items into a string with "`n" - which is also recognized as a delimiter
 ##
 ##   or
 ##
-##   $text = '
+##   $text = @'
 ##   Dave is a <% if($true){ %>man<% }else{ %>lady<% } %>.
 ##   Davie is <%= $age %>.
 ##   '@
@@ -69,21 +72,21 @@ function EPS-Render{
     [void]$p.addparameter("temp",$template)
     [void]$p.addparameter("libpath",$execPath)
     [void]$p.addparameter("binding",$binding)
-    $result = $p.invoke()
-    return $result
+    $p.invoke()
   }
   else{
     $script = Compile-Raw $template
-    $result = iex $script
-    return $result
+    iex $script
   }
 }
 
 ## Compile-Raw:
+##
 ##   Used internally. To comiple templates into text
 ##   Input parameter '$raw' should be a [string] type.
 ##   So if reading from a file via 'gc/get-content' cmdlet, 
 ##   you should join all lines together with new-line ("`n") as delimiters
+##
 function Compile-Raw{
   param(
   [string]$raw,
@@ -194,5 +197,5 @@ function Compile-Raw{
   }
   
   $line = $null
-  return $script
+  $script
 }
