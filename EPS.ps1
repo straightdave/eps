@@ -44,10 +44,16 @@ $execPath = $MyInvocation.MyCommand.Definition
 ##
 function EPS-Render{
   param(
-  [string]$template,
+  [string]$template   = "",
+  [string]$file       = "",
   [hashtable]$binding = @{},
   [switch]$safe
   )
+  
+  if($file -and (test-path $file)){
+    $temp1 = gc $file
+    $template = $temp1 -join "`n"
+  }
   
   if($safe){
     $p = [powershell]::create()
