@@ -8,10 +8,20 @@ EPS allows PowerShell code to be embedded within a pair of `<%` and `%>`, or `<%
 Code in `<% %>` delimiters will be treated as expressions or commands which help to generate text;<br/>
 Code in `<%= %>` delimiters is treated as values;<br/>
 Text in `<%# %>` delimiters is treated as comment which is ignored in compiling process.<br/>
+_Note_<br/>
+You can write multiple-line commands in a ```<% %>```.
 
-Here's the example:
+#### Command usages
+```EPS-Render [[-template] $text] | [-file $a_file_name] [-safe] [-binding $a_hashtable]```<br/><br/>
+1. '-template' requires template value of string type <br/>
+2. '-file' requires a file name of string type <br/>
+3. if '-file' exists, it will omit '-template' value and render template in the file <br/>
+4. '-safe' will let it render templates in isolated mode (in another thread/powershell instance) to avoid variable pollution (variable name already in current context) <br/>
+5. if '-safe' is used, you should provide variables yourself by using '-binding' option with a hashtable containing k-v pairs <br/>
 
-test.eps:
+### Examples:
+
+In the file 'test.eps':
 ```
 Hi <%= $name %>
 
@@ -32,12 +42,11 @@ Then type some commands:
 ```powershell
 . .\eps.ps1  # don't forget to load
 
-$text = gc .\test.eps
-$text = $text -join "`n"
 $name = "ABC"
-EPS-Render $text
+EPS-Render -file test.eps
+
 # here it uses non-safe mode
-# To use safe mode: using 'EPS-Render $text -safe' can compile in another PowerShell instance
+# To use safe mode: using 'EPS-Render -file test.eps -safe' can compile in another PowerShell instance
 # to avoid variables polluted by current context
 ```
 _NOTE_<br/>
@@ -64,9 +73,7 @@ Dave
 
 Or you can use safe mode with data bindings:
 ```powershell
-$text = gc .\test.eps
-$text = $text -join "`n"
-EPS-Render $text -safe -binding @{ name = "dave" }
+EPS-Render -file $file_name -safe -binding @{ name = "dave" }
 ```
 
 ### More examples and notes
@@ -77,7 +84,7 @@ $template = @'
 Hi, dave is a <% if($true) { "boy" } else { "girl" } %>
 '@
 
-EPS-Render $template
+EPS-Render -template $template
 ```
 will produce:
 ```
@@ -94,7 +101,7 @@ Your wife
 <% get-date -f yyyy-MM-dd %>
 ```
 will produce:
-````
+```
 2014-06-10
 Hi dave
 Don't watch TV.
@@ -104,8 +111,8 @@ Your wife
 _NOTE_<br/>
 ```<%= $(get-date -f yyyy-MM-dd) %>``` produces the date string at the same place.
 
-
 + you can use multi-line <% %> block
+
 such as:
 ```powershell
 $template = @'
@@ -121,9 +128,9 @@ $template = @'
 Hello, I'm <%= $name %>.
 '@
 
-EPS-Render $template
+EPS-Render -template $template
 ```
-will produce:
+it will produce:
 ```
 haha
 haha
