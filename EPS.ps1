@@ -20,17 +20,14 @@ $execPath = $MyInvocation.MyCommand.Definition
 ##   Compiling process will inject values recorded in hashtable to template
 ##
 ## Examples:
-##   - EPS-Render $text
+##   - EPS-Render -template $text
 ##     will use current context to fill variables in template. If no '$name' exists in current context, it will produce blanks.
-##   - EPS-Render $text -safe -binding @{ name = "dave" }
+##   - EPS-Render -template $text -safe -binding @{ name = "dave" }
 ##     will use "dave" to render the placeholder "<%= $name %>" in template
 ##
 ## Full example:
-##   $text = gc .\test.eps
-##   $text = $tt -join "`n"
-##   $result = EPS-Render $text -safe -binding @{ name = "dave" }
-##   *Note*: text read from a text file is not a string but a list/array. 
-##           so it needs to join all items into a string with "`n" - which is also recognized as a delimiter
+##   $result = EPS-Render -file $a_file -safe -binding @{ name = "dave" }
+##   *Note*: if you use -file parameter, it will omit -template parameter.
 ##
 ##   or
 ##
