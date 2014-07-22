@@ -43,11 +43,23 @@ The most common use that the author can image is to render reports based on HTML
 <p>EPS allows PowerShell code to be embedded within a pair of <code>&lt;%</code> and <code>%&gt;</code>, or <code>&lt;%=</code> and <code>%&gt;</code>, or other delimiters. These embedded code blocks are then evaluated in-place (they are replaced by the result of their evaluation).<br>
 Code in <code>&lt;% %&gt;</code> delimiters will be treated as expressions or commands which help to generate text;<br>
 Code in <code>&lt;%= %&gt;</code> delimiters is treated as values;<br>
-Text in <code>&lt;%# %&gt;</code> delimiters is treated as comment which is ignored in compiling process.<br></p>
+Text in <code>&lt;%# %&gt;</code> delimiters is treated as comment which is ignored in compiling process.<br><em>Note</em><br>
+You can write multiple-line commands in a <code>&lt;% %&gt;</code>.</p>
 
-<p>Here's the example:</p>
+<h4>
+<a name="command-usages" class="anchor" href="#command-usages"><span class="octicon octicon-link"></span></a>Command usages</h4>
 
-<p>test.eps:</p>
+<p><code>EPS-Render [[-template] $text] | [-file $a_file_name] [-safe] [-binding $a_hashtable]</code><br><br>
+1. '-template' requires template value of string type <br>
+2. '-file' requires a file name of string type <br>
+3. if '-file' exists, it will omit '-template' value and render template in the file <br>
+4. '-safe' will let it render templates in isolated mode (in another thread/powershell instance) to avoid variable pollution (variable name already in current context) <br>
+5. if '-safe' is used, you should provide variables yourself by using '-binding' option with a hashtable containing k-v pairs <br></p>
+
+<h3>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples:</h3>
+
+<p>In the file 'test.eps':</p>
 
 <pre><code>Hi &lt;%= $name %&gt;
 
@@ -68,12 +80,11 @@ Dave
 
 <div class="highlight highlight-powershell"><pre><span class="p">.</span> <span class="p">.\</span><span class="n">eps</span><span class="p">.</span><span class="n">ps1</span>  <span class="c"># don't forget to load</span>
 
-<span class="nv">$text</span> <span class="p">=</span> <span class="n">gc</span> <span class="p">.\</span><span class="n">test</span><span class="p">.</span><span class="n">eps</span>
-<span class="nv">$text</span> <span class="p">=</span> <span class="nv">$text</span> <span class="n">-join</span> <span class="s2">"</span><span class="se">`n</span><span class="s2">"</span>
 <span class="nv">$name</span> <span class="p">=</span> <span class="s2">"ABC"</span>
-<span class="n">EPS-Render</span> <span class="nv">$text</span>
+<span class="n">EPS-Render</span> <span class="o">-file</span> <span class="n">test</span><span class="p">.</span><span class="n">eps</span>
+
 <span class="c"># here it uses non-safe mode</span>
-<span class="c"># To use safe mode: using 'EPS-Render $text -safe' can compile in another PowerShell instance</span>
+<span class="c"># To use safe mode: using 'EPS-Render -file test.eps -safe' can compile in another PowerShell instance</span>
 <span class="c"># to avoid variables polluted by current context</span>
 </pre></div>
 
@@ -100,9 +111,7 @@ Dave
 
 <p>Or you can use safe mode with data bindings:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="nv">$text</span> <span class="p">=</span> <span class="n">gc</span> <span class="p">.\</span><span class="n">test</span><span class="p">.</span><span class="n">eps</span>
-<span class="nv">$text</span> <span class="p">=</span> <span class="nv">$text</span> <span class="n">-join</span> <span class="s2">"</span><span class="se">`n</span><span class="s2">"</span>
-<span class="n">EPS-Render</span> <span class="nv">$text</span> <span class="n">-safe</span> <span class="n">-binding</span> <span class="p">@{</span> <span class="n">name</span> <span class="p">=</span> <span class="s2">"dave"</span> <span class="p">}</span>
+<div class="highlight highlight-powershell"><pre><span class="n">EPS-Render</span> <span class="o">-file</span> <span class="nv">$file_name</span> <span class="n">-safe</span> <span class="n">-binding</span> <span class="p">@{</span> <span class="n">name</span> <span class="p">=</span> <span class="s2">"dave"</span> <span class="p">}</span>
 </pre></div>
 
 <h3>
@@ -114,7 +123,7 @@ Dave
 <span class="sh">Hi, dave is a &lt;% if($true) { "boy" } else { "girl" } %&gt;</span>
 <span class="sh">'@</span>
 
-<span class="n">EPS-Render</span> <span class="nv">$template</span>
+<span class="n">EPS-Render</span> <span class="n">-template</span> <span class="nv">$template</span>
 </pre></div>
 
 <p>will produce:</p>
@@ -144,9 +153,10 @@ Your wife
 <p><em>NOTE</em><br><code>&lt;%= $(get-date -f yyyy-MM-dd) %&gt;</code> produces the date string at the same place.</p>
 
 <ul>
-<li>you can use multi-line &lt;% %&gt; block
-such as:</li>
-</ul><div class="highlight highlight-powershell"><pre><span class="nv">$template</span> <span class="p">=</span> <span class="sh">@'</span>
+<li>you can use multi-line &lt;% %&gt; block</li>
+</ul><p>such as:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$template</span> <span class="p">=</span> <span class="sh">@'</span>
 
 <span class="sh">&lt;%</span>
 <span class="sh">  $name = "dave"</span>
@@ -159,10 +169,10 @@ such as:</li>
 <span class="sh">Hello, I'm &lt;%= $name %&gt;.</span>
 <span class="sh">'@</span>
 
-<span class="n">EPS-Render</span> <span class="nv">$template</span>
+<span class="n">EPS-Render</span> <span class="n">-template</span> <span class="nv">$template</span>
 </pre></div>
 
-<p>will produce:</p>
+<p>it will produce:</p>
 
 <pre><code>haha
 haha
