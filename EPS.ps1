@@ -9,7 +9,9 @@
 ##
 #######################################################
 
-$execPath = $MyInvocation.MyCommand.Definition
+$execPath   = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+$thisfile   = "$execPath\eps.ps1"
+$sysLibFile = "$execPath\sys_lib.ps1"  # import built-in resources to eps file 
 
 ## EPS-Render:
 ##
@@ -19,15 +21,19 @@ $execPath = $MyInvocation.MyCommand.Definition
 ##   With Safe mode: you can pass a hashtable containing all variables to this function. 
 ##   Compiling process will inject values recorded in hashtable to template
 ##
+## Usage:
+##
+##    EPS-Render [[-template] <text>]|[-file <file name>] [-safe] [-binding <hashtable>]
+##
 ## Examples:
 ##   - EPS-Render -template $text
 ##     will use current context to fill variables in template. If no '$name' exists in current context, it will produce blanks.
 ##   - EPS-Render -template $text -safe -binding @{ name = "dave" }
 ##     will use "dave" to render the placeholder "<%= $name %>" in template
 ##
-## Full example:
+## Other example:
 ##   $result = EPS-Render -file $a_file -safe -binding @{ name = "dave" }
-##   *Note*: if you use -file parameter, it will omit -template parameter.
+##   *Note*: here using safe mode
 ##
 ##   or
 ##
@@ -37,7 +43,7 @@ $execPath = $MyInvocation.MyCommand.Definition
 ##   '@
 ##   
 ##   $age = 26
-##   $result = EPS-Render $text
+##   $result = EPS-Render -template $text
 ##
 function EPS-Render{
   param(
@@ -52,17 +58,21 @@ function EPS-Render{
     $template = $temp1 -join "`n"
   }
   
+  if($sysLibFile -and (test-path $sysLibFile)){
+    $template = "<% . $sysLibFile %>`n" + $template  
+  }
+  
   if($safe){
     $p = [powershell]::create()
     
     $block = {
       param(
       $temp,
-      $libpath,
+      $lib,
       $binding = @{}    # variable binding
       )
       
-      . $libpath   # load Compile-Raw
+      . $lib   # load Compile-Raw
 
       $binding.keys | %{ nv -Name $_ -Value $binding[$_] }     
       
@@ -73,7 +83,7 @@ function EPS-Render{
     
     [void]$p.addscript($block)
     [void]$p.addparameter("temp",$template)
-    [void]$p.addparameter("libpath",$execPath)
+    [void]$p.addparameter("lib",$thisfile)
     [void]$p.addparameter("binding",$binding)
     $p.invoke()
   }
