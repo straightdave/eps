@@ -92,7 +92,7 @@ function New-EpsResult{
 
     [void]$p.addscript($block)
     [void]$p.addparameter("temp",$template)
-    [void]$p.addparameter("lib","Z:\src\github\eps\functions\get-epsraw.ps1")
+    [void]$p.addparameter("lib",$GetEpsRawPath)
     [void]$p.addparameter("binding",$binding)
     $p.invoke()
 
