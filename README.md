@@ -1,5 +1,19 @@
 EPS
 ===
+This is a fork of the excellent templating tool for powershell found at:
+http://straightdave.github.io/eps
+Thanks, Dave.
+
+This fork adds following features:
+- Pack the function in a Powershell Module
+- Rename the 'EPS-Render' function to 'New-EpsResult' to fit the Approved Verbs for Powershell
+- Create an Alias 'EPS-Render' for compatibility with old function name.
+- Rename the 'Compile-Raw' function to 'New-EpsResult' to fit the Approved Verbs for Powershell
+- Create an Alias 'Compile-Raw' for compatibility with old function name.
+- Move Functions definitions in own file in a Functions folder
+
+## Original Description
+
 EPS (Embedded PowerShell), inspired by erb, is a templating system that embeds PowerShell code into a text document. It is often used to embed PowerShell code in an HTML document, similar to ASP, JSP and PHP.<br/>
 The most common use that the author can image is to render reports based on HTML pages (on Windows platforms). Or it may works for a rails-like or sinatra-like framework that somebody creates for PowerShell.
 
