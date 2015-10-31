@@ -12,7 +12,7 @@ _Note_<br/>
 You can write multiple-line commands in a ```<% %>```.
 
 #### Command usages
-```EPS-Render [[-template] $text] | [-file $a_file_name] [-safe] [-binding $a_hashtable]```<br/><br/>
+```Expand-Template [[-template] $text] | [-file $a_file_name] [-safe] [-binding $a_hashtable]```<br/><br/>
 1. '-template' requires template value of string type <br/>
 2. '-file' requires a file name of string type <br/>
 3. if '-file' exists, it will omit '-template' value and render template in the file <br/>
@@ -43,14 +43,14 @@ Then type some commands:
 . .\eps.ps1  # don't forget to load
 
 $name = "ABC"
-EPS-Render -file test.eps
+Expand-Template -file test.eps
 
 # here it uses non-safe mode
-# To use safe mode: using 'EPS-Render -file test.eps -safe' can compile in another PowerShell instance
+# To use safe mode: using 'Expand-Template -file test.eps -safe' can compile in another PowerShell instance
 # to avoid variables polluted by current context
 ```
 _NOTE_<br/>
-__EPS-Render__ accepts a string as inputted template. ```$text``` here is an array so it needs to be concated with ```"`n"```.<br/>
+__Expand-Template__ accepts a string as inputted template. ```$text``` here is an array so it needs to be concated with ```"`n"```.<br/>
 In the following samples you'll see some input are in a ```@' '@``` block which is a string.
 
 It will produce:
@@ -73,7 +73,7 @@ Dave
 
 Or you can use safe mode with data bindings:
 ```powershell
-EPS-Render -file $file_name -safe -binding @{ name = "dave" }
+Expand-Template -file $file_name -safe -binding @{ name = "dave" }
 ```
 
 ### More examples and notes
@@ -84,7 +84,7 @@ $template = @'
 Hi, dave is a <% if($true) { "boy" } else { "girl" } %>
 '@
 
-EPS-Render -template $template
+Expand-Template -template $template
 ```
 will produce:
 ```
@@ -128,7 +128,7 @@ $template = @'
 Hello, I'm <%= $name %>.
 '@
 
-EPS-Render -template $template
+Expand-Template -template $template
 ```
 it will produce:
 ```
