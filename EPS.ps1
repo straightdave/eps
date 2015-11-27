@@ -175,7 +175,7 @@ function Compile-Raw{
             }
             
             '<%=' {
-              $line += ($insert_cmd + '"' + $content.trim() + '"')
+              $line += ($insert_cmd + '"$(' + $content.trim() + ')"')
             }
             
             '<%#' { }
