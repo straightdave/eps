@@ -11,7 +11,7 @@
 
 $execPath   = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
 $thisfile   = "$execPath\eps.ps1"
-$sysLibFile = "$execPath\sys_lib.ps1"  # import built-in resources to eps file 
+#$sysLibFile = "$execPath\sys_lib.ps1"  # import built-in resources to eps file 
 
 ## EPS-Render:
 ##
