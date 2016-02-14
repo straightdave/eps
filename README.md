@@ -1,6 +1,6 @@
 EPS
 ===
-EPS ( *Embedded PowerShell* ), inspired by erb, is a templating tool that renders PowerShell code within text document, conceptually and syntactically similar to erb for Ruby or twig for PHP, etc.    
+EPS ( *Embedded PowerShell* ), inspired by erb, is a templating tool that renders PowerShell code into text document, conceptually and syntactically similar to erb for Ruby or twig for PHP, etc.    
 
 ### Syntax
 EPS allows PowerShell code to be embedded within a pair of `<% ... %>`, `<%= ... %>`, or `<%# ... %>` as well:
@@ -28,7 +28,8 @@ EPS-Render [[-template] $inline_template_str] | [-file $template_file] [-safe -b
 
 ### Example
 
-In a template file 'test.eps':
+In a template file 'test.eps':   
+
 ```
 Hi <%= $name %>
 
@@ -54,15 +55,12 @@ EPS-Render -file test.eps
 ```
 
 >  
-Here it uses non-safe mode (render template with values in current run space)
-To use safe mode: using 'EPS-Render -file test.eps -safe' can compile in another PowerShell instance
-to avoid variables polluted by current context
+Here it is in non-safe mode (render template with values in current run space)
+To use safe mode: using `EPS-Render -file test.eps -safe` with binding values
+   
 
-_Tip_   
-__EPS-Render__ accepts a string as inputted template. ```$text``` here is an array so it needs to be concated with ```"`n"```.<br/>
-In the following samples you'll see some input are in a ```@' '@``` block which is a string.
+It will produce:   
 
-It will produce:
 ```
 Hi ABC
 
@@ -84,9 +82,10 @@ Or you can use safe mode with data bindings:
 ```powershell
 EPS-Render -file $file_name -safe -binding @{ name = "dave" }
 ```
+which will generate same output.
 
-### More examples and notes
-+ any result from a ```<% %>``` pair will be placed at the top
+### More examples
+any statement result in a `<% ... %>` block will be placed at the template top (that's why you should use `<%= ... %>` instead):   
 
 ```powershell
 $template = @'
@@ -95,13 +94,14 @@ Hi, dave is a <% if($true) { "boy" } else { "girl" } %>
 
 EPS-Render -template $template
 ```
-will produce:
+will produce:   
+
 ```
 boy
 Hi, dave is a 
 ```
 
-also, if template is
+for another instance, if template is
 ```
 Hi dave
 Don't watch TV.
@@ -109,20 +109,20 @@ Don't watch TV.
 Your wife
 <% get-date -f yyyy-MM-dd %>
 ```
-will produce:
+It will produce:   
+
 ```
 2014-06-10
 Hi dave
 Don't watch TV.
 
 Your wife
-```
-_NOTE_<br/>
-```<%= $(get-date -f yyyy-MM-dd) %>``` produces the date string at the same place.
+```   
 
-+ you can use multi-line <% %> block
+> You should use `<%= ... %>`. `<%= $(get-date -f yyyy-MM-dd) %>` produces the date string at the same location.
 
-such as:
+   
+You can use multi-line statements in `<% ... %>` block:   
 ```powershell
 $template = @'
 
@@ -139,7 +139,8 @@ Hello, I'm <%= $name %>.
 
 EPS-Render -template $template
 ```
-it will produce:
+
+it will produce:   
 ```
 haha
 haha
@@ -150,9 +151,10 @@ haha
 Hello, I'm dave.
 ```
 
-Remember if you add variables in the template directly, they will be used in that template.
+> Remaider: the output of statements in `<% ... %>` block will be put at top   
 
 
-## Contribute
-Please try out and help to find more bugs! 
+## Contribute   
+
+Help find more bugs! Or find more usage of this tool ...
 Author's email: eyaswoo@163.com
