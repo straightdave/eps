@@ -16,7 +16,7 @@ But in this style the output text is not produced **in-place** for sure
 
 ### Commandline usage
 
-```bash
+```
 EPS-Render [[-template] $inline_template_str] | [-file $template_file] [-safe -binding $params_hash]
 ```   
    
