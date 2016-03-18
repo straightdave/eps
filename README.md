@@ -119,7 +119,7 @@ Don't watch TV.
 Your wife
 ```   
 
-> You should use `<%= ... %>`. `<%= $(get-date -f yyyy-MM-dd) %>` produces the date string at the same location.
+> You should use `<%= ... %>` instead, since `<%= $(get-date -f yyyy-MM-dd) %>` produces the date string at the same place.
 
    
 You can use multi-line statements in `<% ... %>` block:   
@@ -151,7 +151,7 @@ haha
 Hello, I'm dave.
 ```
 
-> Remaider: the output of statements in `<% ... %>` block will be put at top   
+> Reminder: the output of statements in `<% ... %>` block will be put at top, not in-place 
 
 
 ## Contribute   
