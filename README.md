@@ -1,27 +1,35 @@
 EPS
 ===
-EPS (Embedded PowerShell), inspired by erb, is a templating system that embeds PowerShell code into a text document. It is often used to embed PowerShell code in an HTML document, similar to ASP, JSP and PHP.<br/>
-The most common use that the author can image is to render reports based on HTML pages (on Windows platforms). Or it may works for a rails-like or sinatra-like framework that somebody creates for PowerShell.
+EPS ( *Embedded PowerShell* ), inspired by erb, is a templating tool that renders PowerShell code into text document, conceptually and syntactically similar to erb for Ruby or twig for PHP, etc.    
 
-### Usage
-EPS allows PowerShell code to be embedded within a pair of `<%` and `%>`, or `<%=` and `%>`, or other delimiters. These embedded code blocks are then evaluated in-place (they are replaced by the result of their evaluation).<br/>
-Code in `<% %>` delimiters will be treated as expressions or commands which help to generate text;<br/>
-Code in `<%= %>` delimiters is treated as values;<br/>
-Text in `<%# %>` delimiters is treated as comment which is ignored in compiling process.<br/>
-_Note_<br/>
-You can write multiple-line commands in a ```<% %>```.
+### Syntax
+EPS allows PowerShell code to be embedded within a pair of `<% ... %>`, `<%= ... %>`, or `<%# ... %>` as well:
 
-#### Command usages
-```Expand-Template [[-template] $text] | [-file $a_file_name] [-safe] [-binding $a_hashtable]```<br/><br/>
-1. '-template' requires template value of string type <br/>
-2. '-file' requires a file name of string type <br/>
-3. if '-file' exists, it will omit '-template' value and render template in the file <br/>
-4. '-safe' will let it render templates in isolated mode (in another thread/powershell instance) to avoid variable pollution (variable name already in current context) <br/>
-5. if '-safe' is used, you should provide variables yourself by using '-binding' option with a hashtable containing k-v pairs <br/>
+- Code in `<% ... %>` blocks are treated as statements or commands
+- Code in `<%= ... %>` blocks are treated as values or expressions   
+- Text in `<%# ... %>` blocks are treated as comment which will be ignored in compilation    
 
-### Examples:
+> 
+You can write multiple-line commands in a ```<% ... %>``` block.
+You can also write code which produce text output in `<% ... %>` blocks, instead of using a `<%= ... %>` block.
+But in this style the output text is not produced **in-place** for sure    
 
-In the file 'test.eps':
+### Commandline usage
+
+```
+Expand-Template [[-template] $inline_template_str] | [-file $template_file] [-safe -binding $params_hash]
+```   
+   
+
+- use **-template** to provide template text via a commandline param rather than a file
+- if **-file** exists, it ignores **-template** param and render the template content in the file   
+- **-safe** renders template in **isolated** mode (in another thread/powershell space) to avoid variable pollution (variable name already in current context)    
+- if **-safe** is provided, you should bind your values using **-binding** option with a hashtable containing k-v pairs   
+
+### Example
+
+In a template file 'test.eps':   
+
 ```
 Hi <%= $name %>
 
@@ -38,22 +46,21 @@ Dave
 <%= (Get-Date -f yyyy-MM-dd) %>
 ```
 
-Then type some commands:
+Then render it in commandline:
 ```powershell
-. .\eps.ps1  # don't forget to load
+. .\eps.ps1  # load this tool into current PowerShell space
 
 $name = "ABC"
 Expand-Template -file test.eps
-
-# here it uses non-safe mode
-# To use safe mode: using 'Expand-Template -file test.eps -safe' can compile in another PowerShell instance
-# to avoid variables polluted by current context
 ```
-_NOTE_<br/>
-__Expand-Template__ accepts a string as inputted template. ```$text``` here is an array so it needs to be concated with ```"`n"```.<br/>
-In the following samples you'll see some input are in a ```@' '@``` block which is a string.
 
-It will produce:
+>  
+Here it is in non-safe mode (render template with values in current run space)
+To use safe mode: using `Expand-Template -file test.eps -safe` with binding values
+   
+
+It will produce:   
+
 ```
 Hi ABC
 
@@ -75,9 +82,10 @@ Or you can use safe mode with data bindings:
 ```powershell
 Expand-Template -file $file_name -safe -binding @{ name = "dave" }
 ```
+which will generate same output.
 
-### More examples and notes
-+ any result from a ```<% %>``` pair will be placed at the top
+### More examples
+any statement result in a `<% ... %>` block will be placed at the template top (that's why you should use `<%= ... %>` instead):   
 
 ```powershell
 $template = @'
@@ -86,13 +94,14 @@ Hi, dave is a <% if($true) { "boy" } else { "girl" } %>
 
 Expand-Template -template $template
 ```
-will produce:
+will produce:   
+
 ```
 boy
 Hi, dave is a 
 ```
 
-also, if template is
+for another instance, if template is
 ```
 Hi dave
 Don't watch TV.
@@ -100,20 +109,20 @@ Don't watch TV.
 Your wife
 <% get-date -f yyyy-MM-dd %>
 ```
-will produce:
+It will produce:   
+
 ```
 2014-06-10
 Hi dave
 Don't watch TV.
 
 Your wife
-```
-_NOTE_<br/>
-```<%= $(get-date -f yyyy-MM-dd) %>``` produces the date string at the same place.
+```   
 
-+ you can use multi-line <% %> block
+> You should use `<%= ... %>` instead, since `<%= $(get-date -f yyyy-MM-dd) %>` produces the date string at the same place.
 
-such as:
+   
+You can use multi-line statements in `<% ... %>` block:   
 ```powershell
 $template = @'
 
@@ -130,7 +139,8 @@ Hello, I'm <%= $name %>.
 
 Expand-Template -template $template
 ```
-it will produce:
+
+it will produce:   
 ```
 haha
 haha
@@ -141,9 +151,10 @@ haha
 Hello, I'm dave.
 ```
 
-Remember if you add variables in the template directly, they will be used in that template.
+> Reminder: the output of statements in `<% ... %>` block will be put at top, not in-place 
 
 
-## Contribute
-Please try out and help to find more bugs! 
+## Contribute   
+
+Help find more bugs! Or find more usage of this tool ...
 Author's email: eyaswoo@163.com
