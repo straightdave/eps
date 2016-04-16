@@ -1,6 +1,5 @@
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.ps1", ".psm1")
-Import-Module "$here\$sut" -Force
+Import-Module "$here\..\EPS" -Force
 
 Describe 'Expand-EPS' {
 	Context 'with template "Hello <%= $A %>!" and with -Binding' {
