@@ -54,7 +54,7 @@ But in this style the output text is not produced <strong>in-place</strong> for 
 <h3>
 <a id="commandline-usage" class="anchor" href="#commandline-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Commandline usage</h3>
 
-<pre><code>EPS-Render [[-template] $inline_template_str] | [-file $template_file] [-safe -binding $params_hash]
+<pre><code>Expand-Template [[-template] $inline_template_str] | [-file $template_file] [-safe -binding $params_hash]
 </code></pre>
 
 <ul>
@@ -93,11 +93,11 @@ Dave
 <div class="highlight highlight-source-powershell"><pre><span class="pl-k">.</span> .\eps.ps1  <span class="pl-c"># load this tool into current PowerShell space</span>
 
 <span class="pl-k">$</span><span class="pl-smi">name</span> <span class="pl-k">=</span> <span class="pl-s">"ABC"</span>
-EPS<span class="pl-k">-</span>Render <span class="pl-k">-</span>file test.eps</pre></div>
+<span class="pl-c1">Expand-Template</span> <span class="pl-k">-</span>file test.eps</pre></div>
 
 <blockquote>
 <p>Here it is in non-safe mode (render template with values in current run space)
-To use safe mode: using <code>EPS-Render -file test.eps -safe</code> with binding values</p>
+To use safe mode: using <code>Expand-Template -file test.eps -safe</code> with binding values</p>
 </blockquote>
 
 <p>It will produce:   </p>
@@ -120,7 +120,7 @@ Dave
 
 <p>Or you can use safe mode with data bindings:</p>
 
-<div class="highlight highlight-source-powershell"><pre>EPS<span class="pl-k">-</span>Render <span class="pl-k">-</span>file <span class="pl-k">$</span><span class="pl-smi">file_name</span> <span class="pl-k">-</span>safe <span class="pl-k">-</span>binding @{ name <span class="pl-k">=</span> <span class="pl-s">"dave"</span> }</pre></div>
+<div class="highlight highlight-source-powershell"><pre><span class="pl-c1">Expand-Template</span> <span class="pl-k">-</span>file <span class="pl-k">$</span><span class="pl-smi">file_name</span> <span class="pl-k">-</span>safe <span class="pl-k">-</span>binding @{ name <span class="pl-k">=</span> <span class="pl-s">"dave"</span> }</pre></div>
 
 <p>which will generate same output.</p>
 
@@ -133,7 +133,7 @@ Dave
 <span class="pl-s">Hi, dave is a &lt;% if($true) { "boy" } else { "girl" } %&gt;</span>
 <span class="pl-s">'@</span>
 
-EPS<span class="pl-k">-</span>Render <span class="pl-k">-</span>template <span class="pl-k">$</span><span class="pl-smi">template</span></pre></div>
+<span class="pl-c1">Expand-Template</span> <span class="pl-k">-</span>template <span class="pl-k">$</span><span class="pl-smi">template</span></pre></div>
 
 <p>will produce:   </p>
 
@@ -178,7 +178,7 @@ Your wife
 <span class="pl-s">Hello, I'm &lt;%= $name %&gt;.</span>
 <span class="pl-s">'@</span>
 
-EPS<span class="pl-k">-</span>Render <span class="pl-k">-</span>template <span class="pl-k">$</span><span class="pl-smi">template</span></pre></div>
+<span class="pl-c1">Expand-Template</span> <span class="pl-k">-</span>template <span class="pl-k">$</span><span class="pl-smi">template</span></pre></div>
 
 <p>it will produce:   </p>
 
@@ -196,7 +196,12 @@ Hello, I'm dave.
 </blockquote>
 
 <h2>
-<a id="contribute" class="anchor" href="#contribute" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contribute</h2>
+<a id="contribution" class="anchor" href="#contribution" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contribution</h2>
+
+<ul>
+<li>Original version was written by <a href="https://github.com/straightdave">Dave Wu</a>.</li>
+<li>Maintained now and extended by <a href="https://github.com/dbroeglin">Dominique Broeglin (@dbroeglin)</a>, thank you pal 谢谢！</li>
+</ul>
 
 <p>Help find more bugs! Or find more usage of this tool ...
 Author's email: <a href="mailto:eyaswoo@163.com">eyaswoo@163.com</a></p>
