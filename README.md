@@ -17,7 +17,7 @@ But in this style the output text is not produced **in-place** for sure
 ### Commandline usage
 
 ```
-EPS-Render [[-template] $inline_template_str] | [-file $template_file] [-safe -binding $params_hash]
+Expand-Template [[-template] $inline_template_str] | [-file $template_file] [-safe -binding $params_hash]
 ```   
    
 
@@ -51,12 +51,12 @@ Then render it in commandline:
 . .\eps.ps1  # load this tool into current PowerShell space
 
 $name = "ABC"
-EPS-Render -file test.eps
+Expand-Template -file test.eps
 ```
 
 >  
 Here it is in non-safe mode (render template with values in current run space)
-To use safe mode: using `EPS-Render -file test.eps -safe` with binding values
+To use safe mode: using `Expand-Template -file test.eps -safe` with binding values
    
 
 It will produce:   
@@ -80,7 +80,7 @@ Dave
 
 Or you can use safe mode with data bindings:
 ```powershell
-EPS-Render -file $file_name -safe -binding @{ name = "dave" }
+Expand-Template -file $file_name -safe -binding @{ name = "dave" }
 ```
 which will generate same output.
 
@@ -92,7 +92,7 @@ $template = @'
 Hi, dave is a <% if($true) { "boy" } else { "girl" } %>
 '@
 
-EPS-Render -template $template
+Expand-Template -template $template
 ```
 will produce:   
 
@@ -137,7 +137,7 @@ $template = @'
 Hello, I'm <%= $name %>.
 '@
 
-EPS-Render -template $template
+Expand-Template -template $template
 ```
 
 it will produce:   

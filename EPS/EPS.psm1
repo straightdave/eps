@@ -10,10 +10,10 @@
 #######################################################
 
 $execPath   = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
-$thisfile   = "$execPath\eps.ps1"
+$thisfile   = "$execPath\eps.psm1"
 #$sysLibFile = "$execPath\sys_lib.ps1"  # import built-in resources to eps file 
 
-## EPS-Render:
+## Expand-Template:
 ##
 ##   Key entrance of EPS
 ##   Safe mode: start a new/isolated PowerShell instance to compile the templates 
@@ -23,16 +23,16 @@ $thisfile   = "$execPath\eps.ps1"
 ##
 ## Usage:
 ##
-##    EPS-Render [[-template] <text>]|[-file <file name>] [-safe] [-binding <hashtable>]
+##    Expand-Template [[-template] <text>]|[-file <file name>] [-safe] [-binding <hashtable>]
 ##
 ## Examples:
-##   - EPS-Render -template $text
+##   - Expand-Template -template $text
 ##     will use current context to fill variables in template. If no '$name' exists in current context, it will produce blanks.
-##   - EPS-Render -template $text -safe -binding @{ name = "dave" }
+##   - Expand-Template -template $text -safe -binding @{ name = "dave" }
 ##     will use "dave" to render the placeholder "<%= $name %>" in template
 ##
 ## Other example:
-##   $result = EPS-Render -file $a_file -safe -binding @{ name = "dave" }
+##   $result = Expand-Template -file $a_file -safe -binding @{ name = "dave" }
 ##   *Note*: here using safe mode
 ##
 ##   or
@@ -43,15 +43,22 @@ $thisfile   = "$execPath\eps.ps1"
 ##   '@
 ##   
 ##   $age = 26
-##   $result = EPS-Render -template $text
+##   $result = Expand-Template -template $text
 ##
-function EPS-Render{
-  param(
-  [string]$template   = "",
-  [string]$file       = "",
-  [hashtable]$binding = @{},
-  [switch]$safe
+function Expand-Template {
+  Param(
+    [string]$Template,
+    [string]$File,
+
+    [Parameter(ValueFromPipeline=$True, ValueFromPipelinebyPropertyName=$True)]
+    [Hashtable]$binding = @{},
+    
+    [switch]$safe
   )
+  
+  if (!$Template -and !$File) {
+    Throw New-Object System.ArgumentException "Either Template or File must be provided" 
+  }
   
   if($file -and (test-path $file)){
     $temp1 = gc $file
@@ -88,6 +95,8 @@ function EPS-Render{
     $p.invoke()
   }
   else{
+    $binding.keys | %{ nv -Name $_ -Value $binding[$_] }     
+
     $script = Compile-Raw $template
     iex $script
   }
