@@ -154,7 +154,10 @@ Hello, I'm dave.
 > Reminder: the output of statements in `<% ... %>` block will be put at top, not in-place 
 
 
-## Contribute   
+## Contribution
+
+* Original version was written by [Dave Wu](https://github.com/straightdave).
+* Maintained now and extended by [Dominique Broeglin (@dbroeglin)](https://github.com/dbroeglin), thank you pal 谢谢！
 
 Help find more bugs! Or find more usage of this tool ...
 Author's email: eyaswoo@163.com
