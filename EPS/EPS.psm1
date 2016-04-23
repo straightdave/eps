@@ -149,7 +149,7 @@ function Compile-Raw{
       $content = $content -replace '"','`"'
     
       switch($token){
-        { $_ -in '<%', '<%=', '<%#'} {
+        { '<%', '<%=', '<%#' -contains $_ } {
           $stag = $token          
         }
         
