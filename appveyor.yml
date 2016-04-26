@@ -1,0 +1,25 @@
+# See http://www.appveyor.com/docs/appveyor-yml for many more options
+
+version: 0.2.0-{build}-{branch}
+
+# Skip on updates to the readme.
+# We can force this by adding [skip ci] or [ci skip] anywhere in commit message 
+skip_commits:
+  message: /updated readme.*/
+
+os: WMF 5
+
+install:
+  - cinst -y pester --version 3.4.0
+  # this is a hack to allow PS 2.0 to load the module because pester uses the new
+  # module layout that includes the version number if installed under PS 5.0
+  - ps: cp -r "C:\Program Files\WindowsPowerShell\Modules\Pester\*" "$HOME\Documents\WindowsPowerShell\Modules\Pester"
+
+build: false
+
+test_script:
+  - ps: .\Tests\appveyor.pester.ps1 
+  - ps: powershell.exe -version 2.0 -executionpolicy bypass -noprofile -file .\Tests\Appveyor.Pester.ps1 -Version 2
+  - ps: powershell.exe -version 3.0 -executionpolicy bypass -noprofile -file .\Tests\Appveyor.Pester.ps1 -Version 3
+  - ps: powershell.exe -version 4.0 -executionpolicy bypass -noprofile -file .\Tests\Appveyor.Pester.ps1 -Version 4
+  - ps: .\Tests\Appveyor.Pester.ps1 -Finalize

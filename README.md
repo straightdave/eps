@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/dkkgi7fg8fsubqph?svg=true)](https://ci.appveyor.com/project/dbroeglin/eps)
+
 EPS
 ===
 EPS ( *Embedded PowerShell* ), inspired by erb, is a templating tool that renders PowerShell code into text document, conceptually and syntactically similar to erb for Ruby or twig for PHP, etc.    
