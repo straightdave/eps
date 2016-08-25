@@ -146,7 +146,7 @@ function Compile-Raw{
     if($stag -eq ''){
       
       # escaping characters
-      $content = $content -replace '"','`"'
+      $content = $content -replace '([`"$])', '`$1'
     
       switch($token){
         { '<%', '<%=', '<%#' -contains $_ } {

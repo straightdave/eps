@@ -2,6 +2,12 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 Import-Module "$here\..\EPS" -Force
 
 Describe 'Expand-EPS' {
+	Context 'with template "``#"" and with -Binding' {
+		$Template = "```"`$Test#``0``"
+		It 'escapes properly when needed' {
+			Expand-Template -Template $Template | Should Be "```"`$Test#``0```n"
+		}
+	}
 	Context 'with template "Hello <%= $A %>!" and with -Binding' {
 		$Template = 'Hello <%= $A %>!'
 		BeforeEach {
