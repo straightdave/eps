@@ -5,13 +5,14 @@ Describe 'Expand-EPS' {
 	Context 'with template "Hello <%= $A %>!" and with -Binding' {
 		$Template = 'Hello <%= $A %>!'
 		BeforeEach {
-			$Binding  = @{}		
+			$Binding  = @{}	
 		}
 		It 'expands to Hello Titi !' {
 			$binding.A = 'Titi'
 			Expand-Template -Template $Template -Binding $Binding| Should Be "Hello Titi!`n"
 		}
 		It 'expands to Hello !' {
+			$A = $Null
 			Expand-Template -Template $Template -Binding $Binding | Should Be "Hello !`n"
 		}	
 		It 'expands to Hello World!' {
