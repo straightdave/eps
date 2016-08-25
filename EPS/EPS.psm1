@@ -46,6 +46,7 @@ $thisfile   = "$execPath\eps.psm1"
 ##   $result = Expand-Template -template $text
 ##
 function Expand-Template {
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingInvokeExpression", "")]
   Param(
     [string]$Template,
     [string]$File,
@@ -61,7 +62,7 @@ function Expand-Template {
   }
   
   if($file -and (test-path $file)){
-    $temp1 = gc $file
+    $temp1 = Get-Content $file
     $template = $temp1 -join "`n"
   }
   
@@ -81,11 +82,10 @@ function Expand-Template {
       
       . $lib   # load Compile-Raw
 
-      $binding.keys | %{ nv -Name $_ -Value $binding[$_] }     
+      $binding.keys | ForEach-Object { New-Variable -Name $_ -Value $binding[$_] }     
       
       $script = Compile-Raw $temp      
-      $res = iex $script
-      write-output $res
+      Invoke-Expression $script      
     }
     
     [void]$p.addscript($block)
@@ -95,10 +95,10 @@ function Expand-Template {
     $p.invoke()
   }
   else{
-    $binding.keys | %{ nv -Name $_ -Value $binding[$_] }     
+    $binding.keys | ForEach-Object { New-Variable -Name $_ -Value $binding[$_] }     
 
     $script = Compile-Raw $template
-    iex $script
+    Invoke-Expression $script
   }
 }
 
@@ -135,7 +135,7 @@ function Compile-Raw{
   #========================
   # start!
   #========================
-  $pre_cmd | %{ $line += $_ }
+  $pre_cmd | ForEach-Object { $line += $_ }
   $raw += "`n"
   
   $m = $p.match($raw)
@@ -146,7 +146,7 @@ function Compile-Raw{
     if($stag -eq ''){
       
       # escaping characters
-      $content = $content -replace '"','`"'
+      $content = $content -replace '([`"$])', '`$1'
     
       switch($token){
         { '<%', '<%=', '<%#' -contains $_ } {
@@ -211,7 +211,7 @@ function Compile-Raw{
     $m = $m.nextMatch()
   }
   
-  $post_cmd | %{ $line += $_ }
+  $post_cmd | ForEach-Object { $line += $_ }
   $script = ($line -join ';')
   
   if($debug) {
