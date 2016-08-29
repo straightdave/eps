@@ -4,6 +4,12 @@ EPS
 ===
 EPS ( *Embedded PowerShell* ), inspired by erb, is a templating tool that renders PowerShell code into text document, conceptually and syntactically similar to erb for Ruby or twig for PHP, etc.    
 
+>EPS is uploaded to [PowerShellGallary](https://www.powershellgallery.com/packages/EPS/0.2.0).
+And (if the gallary works well) You can install the module with command:
+```
+PS> Install-Module -Name EPS 
+```
+
 ### Syntax
 EPS allows PowerShell code to be embedded within a pair of `<% ... %>`, `<%= ... %>`, or `<%# ... %>` as well:
 
