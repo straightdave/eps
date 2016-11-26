@@ -43,20 +43,29 @@ Describe 'Expand-EPS' {
 			$binding | Expand-Template -Template $Template | Should Be "Hello World!`n"
 		}
 	}
+
 	Context "with @{ 'A' = @{ 'B' = 'XXX' }}" {
 		BeforeEach {
 			$Binding  = @{ 'A' = @{ 'B' = 'XXX' }}		
 		}
+
 		It 'expands "<%= $B %>" to ""' {
 			$binding | Expand-Template -Template '<%= $B %>' | Should Be "`n"
-		}			
+		}
+
 		It 'expands "<%= $A.B %>" to "XXX"' {
 			$binding | Expand-Template -Template '<%= $A.B %>' | Should Be "XXX`n"
 		}			
+
 		It 'expands "<%= $A.C %>" to ""' {
 			$binding | Expand-Template -Template '<%= $A.C %>' | Should Be "`n"
-		}			
-	}	
+		}
+
+		It 'expands "<%= $A.B`n %>" to "XXX"' {
+			$binding | Expand-Template -Template "<%= `$A.B`n %>" | Should Be "XXX`n"
+		}
+	}
+
 	Context 'without Template or File arguments' {
 		It 'should throw an exception ' {
 			{ Expand-Template } | Should Throw "Either Template or File must be provided"
