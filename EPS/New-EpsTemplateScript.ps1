@@ -1,6 +1,6 @@
 function New-EpsTemplateScript {
     Param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $True)]
         [AllowEmptyString()]
         [String]$Template
     )
@@ -9,8 +9,8 @@ function New-EpsTemplateScript {
     $StringBuilder = New-Object -TypeName "System.Text.StringBuilder"
 
     function Add-Prolog {
-        [void]$StringBuilder.
-            Append("`$sb = New-Object -TypeName 'System.Text.StringBuilder'`n").
+        [void]$StringBuilder.`
+            Append("`$sb = New-Object -TypeName 'System.Text.StringBuilder'`n").`
             Append("[void]`$(`n")
     }
 
@@ -37,10 +37,10 @@ function New-EpsTemplateScript {
     function Add-Expression {
         Param([String]$Value)
 
-        [void]$StringBuilder.
-            Append("`$sb.Append(`"`$(").
-            Append($Value).
-            Append(")`");")
+        [void]$StringBuilder.`
+            Append("`$sb.Append(`"`$(").`
+            Append($Value).`
+            Append(")`");") 
     }
 
     function Add-Code {
@@ -95,6 +95,6 @@ function New-EpsTemplateScript {
         Add-String $Template.Substring($position, $Template.Length - $position)
     }
     Add-Epilog
-    
+
     [ScriptBlock]::Create($StringBuilder.ToString())
 }
