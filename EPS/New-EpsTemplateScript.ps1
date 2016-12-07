@@ -95,6 +95,6 @@ function New-EpsTemplateScript {
         Add-String $Template.Substring($position, $Template.Length - $position)
     }
     Add-Epilog
-
-    $StringBuilder.ToString()
+    
+    [ScriptBlock]::Create($StringBuilder.ToString())
 }

@@ -20,15 +20,15 @@ function Invoke-EpsTemplate {
         $Template = Get-Content -Raw $Path
     }
 
-    $script = New-TemplateScript -Template $Template
-    Write-Verbose "Executing script @'`n$($script | ConvertTo-Json)`n'@."
+    $templateScriptBlock = New-EpsTemplateScript -Template $Template
+    Write-Verbose "Executing script @'`n$($templateScriptBlock | ConvertTo-Json)`n'@."
 
     if($Safe) {
         $block = {
             Param([String]$Script, [Hashtable]$Binding)
 
             $Binding.GetEnumerator() | ForEach-Object { New-Variable -Name $_.Key -Value $_.Value }
-            Invoke-Expression $Script      
+            $templateScriptBlock.Invoke()    
         }
 
         try {
