@@ -1,19 +1,13 @@
-hi <%= $name %>
+Hi <%= $name %>
 
-please buy me the following items:
-<% 1..10 | %{ %>
-  <%= $_ %> 小猪 ... "nihao"
-<% } %>
+<%# this is a comment -%>
+Please buy me the following items:
+<% 1..5 | %{ -%>
+  - <%= $_ %> pigs ...
+<% } -%>
 
-dave is a 
-<% if($true){ %>
-   boy
-<% }else{ %>
-   girl
-<% } %>
+Dave is a <% if($True) { %>boy<% } else { %>girl<% } %>. 
 
-how can i say: <%% and %%>
-
-thanks,
+Thanks,
 Dave
-<%= $(get-date -f yyyy-MM-dd) %>
+<%= (Get-Date -f yyyy-MM-dd) %>

@@ -1,76 +1,90 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/dkkgi7fg8fsubqph?svg=true)](https://ci.appveyor.com/project/dbroeglin/eps)
 
-EPS
-===
-EPS ( *Embedded PowerShell* ), inspired by erb, is a templating tool that renders PowerShell code into text document, conceptually and syntactically similar to erb for Ruby or twig for PHP, etc.    
+# EPS
 
->EPS is uploaded to [PowerShellGallary](https://www.powershellgallery.com/packages/EPS/0.2.0).
-And (if the gallary works well) You can install the module with command:
+EPS ( *Embedded PowerShell* ), inspired by [ERB][erb], is a templating tool that embeds
+PowerShell code into a text document. It is conceptually and syntactically similar to ERB 
+for Ruby or [Twig][twig] for PHP.
+
+EPS can be used to generate any kind of text. The example below illustrates generating
+plain text, but it could be used to generate HTML as in [DS][ds] or PowerShell code as 
+in the [Forge Module generator][forge_module].
+
+EPS is available in the [PowerShell Gallary](https://www.powershellgallery.com/packages/EPS).
+You can install the module with the following command:
+
+```Powershell
+Install-Module -Name EPS 
 ```
-PS> Install-Module -Name EPS 
-```
 
-### Syntax
-EPS allows PowerShell code to be embedded within a pair of `<% ... %>`, `<%= ... %>`, or `<%# ... %>` as well:
+## Syntax
 
-- Code in `<% ... %>` blocks are treated as statements or commands
-- Code in `<%= ... %>` blocks are treated as values or expressions   
-- Text in `<%# ... %>` blocks are treated as comment which will be ignored in compilation    
+EPS allows PowerShell code to be embedded within a pair of `<% ... %>`, 
+`<%= ... %>`, or `<%# ... %>` as well:
 
-> 
-You can write multiple-line commands in a ```<% ... %>``` block.
-You can also write code which produce text output in `<% ... %>` blocks, instead of using a `<%= ... %>` block.
-But in this style the output text is not produced **in-place** for sure    
+- Code in `<% CODE %>` blocks are executed but no value is inserted.
+  - If started with `<%-` : the preceding indentation is trimmed.
+  - If terminated with `-%>` : the following line break is trimmed. 
+- Code in `<%= EXPRESSION %>` blocks insert the value of `EXPRESSION`.   
+  - If terminated with `-%>` : the following line break is trimmed. 
+- Text in `<%# ... %>` blocks are treated as comments and are removed from the output.    
+  - If terminated with `-%>` : the following line break is trimmed.
+- `<%%` and `%%>` : are replaced respectively by `<%` and `%>` in the output. 
 
-### Commandline usage
+All blocks accept multi-line content as long as it is valid PowerShell.
 
-```
-Expand-Template [[-template] $inline_template_str] | [-file $template_file] [-safe -binding $params_hash]
+## Command Line Usage
+
+```PowerShell
+Invoke-EpsTemplate [-Template <string>] [-Binding <hashtable>] [-Safe]  [<CommonParameters>]
+    
+Invoke-EpsTemplate [-Path <string>] [-Binding <hashtable>] [-Safe]  [<CommonParameters>]
 ```   
-   
 
-- use **-template** to provide template text via a commandline param rather than a file
-- if **-file** exists, it ignores **-template** param and render the template content in the file   
-- **-safe** renders template in **isolated** mode (in another thread/powershell space) to avoid variable pollution (variable name already in current context)    
-- if **-safe** is provided, you should bind your values using **-binding** option with a hashtable containing k-v pairs   
+- use `-Template` to render the template in the corresponding string. 
+than a file
+- use `-Path` to render the template in the corresponding file.   
+- `-Safe` renders the template in **isolated** mode (in another thread/powershell 
+instance) to avoid variable pollution (variable that are already in the current 
+scope).    
+- if `-Safe` is provided, you must bind your values using `-Binding` option 
+with a `Hashtable` containing key/value pairs.   
 
-### Example
+## Example
 
-In a template file 'test.eps':   
+In a template file 'Test.eps':   
 
 ```
 Hi <%= $name %>
 
-<%# this is a comment %>
+<%# this is a comment -%>
 Please buy me the following items:
-<% 1..5 | %{ %>
+<% 1..5 | %{ -%>
   - <%= $_ %> pigs ...
-<% } %>
+<% } -%>
 
-Dave is a <% if($true) { %> boy <% } else { %> girl <% } %>. 
+Dave is a <% if($True) { %>boy<% } else { %>girl<% } %>. 
 
 Thanks,
 Dave
 <%= (Get-Date -f yyyy-MM-dd) %>
 ```
 
-Then render it in commandline:
+Then render it in on the command line:
 ```powershell
-. .\eps.ps1  # load this tool into current PowerShell space
+Import-Module EPS
 
 $name = "ABC"
-Expand-Template -file test.eps
+Invoke-EpsTemplate -Path Test.eps
 ```
 
->  
 Here it is in non-safe mode (render template with values in current run space)
-To use safe mode: using `Expand-Template -file test.eps -safe` with binding values
+To use safe mode: using `Invoke-EpsTemplate -Path Test.eps -Safe` with binding values
    
-
 It will produce:   
 
 ```
-Hi ABC
+Hi dave
 
 Please buy me the following items:
   - 1 pigs ...
@@ -83,58 +97,23 @@ Dave is a boy.
 
 Thanks,
 Dave
-2014-06-09
+2016-12-07
 ```
 
 Or you can use safe mode with data bindings:
 ```powershell
-Expand-Template -file $file_name -safe -binding @{ name = "dave" }
+Invoke-EpsTemplate -Path Test.eps -Safe -binding @{ name = "dave" }
 ```
-which will generate same output.
 
-### More examples
-any statement result in a `<% ... %>` block will be placed at the template top (that's why you should use `<%= ... %>` instead):   
+which will generate the same output.
+
+## More examples
+
+You can use multi-line statements in blocks:   
 
 ```powershell
 $template = @'
-Hi, dave is a <% if($true) { "boy" } else { "girl" } %>
-'@
-
-Expand-Template -template $template
-```
-will produce:   
-
-```
-boy
-Hi, dave is a 
-```
-
-for another instance, if template is
-```
-Hi dave
-Don't watch TV.
-
-Your wife
-<% get-date -f yyyy-MM-dd %>
-```
-It will produce:   
-
-```
-2014-06-10
-Hi dave
-Don't watch TV.
-
-Your wife
-```   
-
-> You should use `<%= ... %>` instead, since `<%= $(get-date -f yyyy-MM-dd) %>` produces the date string at the same place.
-
-   
-You can use multi-line statements in `<% ... %>` block:   
-```powershell
-$template = @'
-
-<%
+<%=
   $name = "dave"
   
   1..5 | %{
@@ -145,27 +124,26 @@ $template = @'
 Hello, I'm <%= $name %>.
 '@
 
-Expand-Template -template $template
+Invoke-EpsTemplate -Template $template
 ```
 
-it will produce:   
+will produce:
+
 ```
-haha
-haha
-haha
-haha
-haha
+haha haha haha haha haha
 
 Hello, I'm dave.
 ```
-
-> Reminder: the output of statements in `<% ... %>` block will be put at top, not in-place 
-
 
 ## Contribution
 
 * Original version was written by [Dave Wu](https://github.com/straightdave).
 * Maintained now and extended by [Dominique Broeglin (@dbroeglin)](https://github.com/dbroeglin), thank you pal 谢谢！
 
-Help find more bugs! Or find more usage of this tool ...
+Help find more bugs! Or find more usage of this tool...
 Author's email: eyaswoo@163.com
+
+[erb]: https://en.wikipedia.org/wiki/ERuby
+[twig]: http://twig.sensiolabs.org/
+[ds]: https://github.com/straightdave/ds
+[forge_module]: https://github.com/dbroeglin/Forge.Module
