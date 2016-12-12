@@ -1,5 +1,10 @@
 # EPS Release History
 
+## 0.3.1 (2016-12-12)
+
+ * Added module loading test and corrected PSM1 issue [Dominique Broeglin]
+ * Added a note about backward compatibility [Dominique Broeglin]
+
 ## 0.3.0 (2016-12-09)
 
  * Ensure compatibility with PS 2.0 [Dominique Broeglin]
