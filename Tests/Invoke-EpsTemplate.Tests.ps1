@@ -1,3 +1,4 @@
+Set-StrictMode -Version 2
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 . "$here\..\EPS\New-EpsTemplateScript.ps1"
 . "$here\..\EPS\Invoke-EpsTemplate.ps1"
