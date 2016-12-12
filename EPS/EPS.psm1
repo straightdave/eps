@@ -9,4 +9,7 @@
 ##
 #######################################################
 
-. "$PSScriptRoot\Invoke-EpsTemplate.ps1"
+# Load functions
+$functions = Get-ChildItem -Path $PSScriptRoot -Recurse -Include *.ps1 |
+    Sort-Object |
+    ForEach-Object { . $_.FullName }

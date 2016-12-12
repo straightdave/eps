@@ -1,4 +1,3 @@
-Set-StrictMode -Version 2
 $ErrorActionPreference = "Stop"
 function Invoke-EpsTemplate {
     [CmdletBinding()]
@@ -16,7 +15,7 @@ function Invoke-EpsTemplate {
         [switch]$Safe
     )   
     
-    if ($Null -eq $Path) {
+    if ($PSCmdlet.ParameterSetName -eq 'File template') {
         $Template = [IO.File]::ReadAllText($Path)
     }
 
