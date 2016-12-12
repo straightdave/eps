@@ -7,6 +7,12 @@
  * Refactored template engine to add multiline tags and trimming [Dominique Broeglin]
  * Added test for multiline expression tag [Dominique Broeglin]
 
+Note: This release breaks backward compatibility to behave more like ERB:
+
+ * No more output from a <% ... %> tags
+ * No more line breaks added at the end of the template output
+ * Refactored the cmdlet name to : Invoke-EpsTemplate
+
 ## 0.2.0 (2016-08-29)
 
  * Update README.md [Dave Wu]
