@@ -35,87 +35,106 @@
 <h1>
 <a id="eps" class="anchor" href="#eps" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>EPS</h1>
 
-<p>EPS ( <em>Embedded PowerShell</em> ), inspired by erb, is a templating tool that renders PowerShell code into text document, conceptually and syntactically similar to erb for Ruby or twig for PHP, etc.    </p>
+<p>EPS ( <em>Embedded PowerShell</em> ), inspired by <a href="https://en.wikipedia.org/wiki/ERuby">ERB</a>, is a templating tool that embeds
+PowerShell code into a text document. It is conceptually and syntactically similar to ERB 
+for Ruby or <a href="http://twig.sensiolabs.org/">Twig</a> for PHP.</p>
 
-<blockquote>
-<p>EPS is uploaded to <a href="https://www.powershellgallery.com/packages/EPS/0.2.0">PowerShellGallary</a>.
-And (if the gallary works well) You can install the module with command:</p>
+<p>EPS can be used to generate any kind of text. The example below illustrates generating
+plain text, but it could be used to generate HTML as in <a href="https://github.com/straightdave/ds">DS</a> or PowerShell code as 
+in the <a href="https://github.com/dbroeglin/Forge.Module">Forge Module generator</a>.</p>
 
-<pre><code>PS&gt; Install-Module -Name EPS 
-</code></pre>
-</blockquote>
+<p>EPS is available in the <a href="https://www.powershellgallery.com/packages/EPS">PowerShell Gallary</a>.
+You can install the module with the following command:</p>
 
-<h3>
-<a id="syntax" class="anchor" href="#syntax" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Syntax</h3>
+<div class="highlight highlight-source-powershell"><pre><span class="pl-c1">Install-Module</span> <span class="pl-k">-</span>Name EPS </pre></div>
 
-<p>EPS allows PowerShell code to be embedded within a pair of <code>&lt;% ... %&gt;</code>, <code>&lt;%= ... %&gt;</code>, or <code>&lt;%# ... %&gt;</code> as well:</p>
+<h2>
+<a id="syntax" class="anchor" href="#syntax" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Syntax</h2>
+
+<p>EPS allows PowerShell code to be embedded within a pair of <code>&lt;% ... %&gt;</code>, 
+<code>&lt;%= ... %&gt;</code>, or <code>&lt;%# ... %&gt;</code> as well:</p>
 
 <ul>
-<li>Code in <code>&lt;% ... %&gt;</code> blocks are treated as statements or commands</li>
-<li>Code in <code>&lt;%= ... %&gt;</code> blocks are treated as values or expressions<br>
-</li>
-<li>Text in <code>&lt;%# ... %&gt;</code> blocks are treated as comment which will be ignored in compilation<br>
-</li>
+<li>Code in <code>&lt;% CODE %&gt;</code> blocks are executed but no value is inserted.
+
+<ul>
+<li>If started with <code>&lt;%-</code> : the preceding indentation is trimmed.</li>
+<li>If terminated with <code>-%&gt;</code> : the following line break is trimmed. </li>
 </ul>
-
-<blockquote>
-<p>You can write multiple-line commands in a <code>&lt;% ... %&gt;</code> block.
-You can also write code which produce text output in <code>&lt;% ... %&gt;</code> blocks, instead of using a <code>&lt;%= ... %&gt;</code> block.
-But in this style the output text is not produced <strong>in-place</strong> for sure    </p>
-</blockquote>
-
-<h3>
-<a id="commandline-usage" class="anchor" href="#commandline-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Commandline usage</h3>
-
-<pre><code>Expand-Template [[-template] $inline_template_str] | [-file $template_file] [-safe -binding $params_hash]
-</code></pre>
+</li>
+<li>Code in <code>&lt;%= EXPRESSION %&gt;</code> blocks insert the value of <code>EXPRESSION</code>.<br>
 
 <ul>
-<li>use <strong>-template</strong> to provide template text via a commandline param rather than a file</li>
-<li>if <strong>-file</strong> exists, it ignores <strong>-template</strong> param and render the template content in the file<br>
+<li>If terminated with <code>-%&gt;</code> : the following line break is trimmed. </li>
+</ul>
+</li>
+<li>Text in <code>&lt;%# ... %&gt;</code> blocks are treated as comments and are removed from the output.<br>
+
+<ul>
+<li>If terminated with <code>-%&gt;</code> : the following line break is trimmed.</li>
+</ul>
 </li>
 <li>
-<strong>-safe</strong> renders template in <strong>isolated</strong> mode (in another thread/powershell space) to avoid variable pollution (variable name already in current context)<br>
+<code>&lt;%%</code> and <code>%%&gt;</code> : are replaced respectively by <code>&lt;%</code> and <code>%&gt;</code> in the output. </li>
+</ul>
+
+<p>All blocks accept multi-line content as long as it is valid PowerShell.</p>
+
+<h2>
+<a id="command-line-usage" class="anchor" href="#command-line-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Command Line Usage</h2>
+
+<div class="highlight highlight-source-powershell"><pre><span class="pl-c1">Invoke-EpsTemplate</span> <span class="pl-e">[</span><span class="pl-k">-</span><span class="pl-e">Template</span> <span class="pl-k">&lt;</span><span class="pl-e">string</span><span class="pl-k">&gt;</span><span class="pl-e">]</span> <span class="pl-e">[</span><span class="pl-k">-</span><span class="pl-e">Binding</span> <span class="pl-k">&lt;</span><span class="pl-e">hashtable</span><span class="pl-k">&gt;</span><span class="pl-e">]</span> <span class="pl-e">[</span><span class="pl-k">-</span><span class="pl-e">Safe]</span>  <span class="pl-e">[</span><span class="pl-k">&lt;</span><span class="pl-e">CommonParameters</span><span class="pl-k">&gt;</span><span class="pl-e">]</span>
+
+<span class="pl-c1">Invoke-EpsTemplate</span> <span class="pl-e">[</span><span class="pl-k">-</span><span class="pl-e">Path</span> <span class="pl-k">&lt;</span><span class="pl-e">string</span><span class="pl-k">&gt;</span><span class="pl-e">]</span> <span class="pl-e">[</span><span class="pl-k">-</span><span class="pl-e">Binding</span> <span class="pl-k">&lt;</span><span class="pl-e">hashtable</span><span class="pl-k">&gt;</span><span class="pl-e">]</span> <span class="pl-e">[</span><span class="pl-k">-</span><span class="pl-e">Safe]</span>  <span class="pl-e">[</span><span class="pl-k">&lt;</span><span class="pl-e">CommonParameters</span><span class="pl-k">&gt;</span><span class="pl-e">]</span></pre></div>
+
+<ul>
+<li>use <code>-Template</code> to render the template in the corresponding string. 
+than a file</li>
+<li>use <code>-Path</code> to render the template in the corresponding file.<br>
 </li>
-<li>if <strong>-safe</strong> is provided, you should bind your values using <strong>-binding</strong> option with a hashtable containing k-v pairs<br>
+<li>
+<code>-Safe</code> renders the template in <strong>isolated</strong> mode (in another thread/powershell 
+instance) to avoid variable pollution (variable that are already in the current 
+scope).<br>
+</li>
+<li>if <code>-Safe</code> is provided, you must bind your values using <code>-Binding</code> option 
+with a <code>Hashtable</code> containing key/value pairs.<br>
 </li>
 </ul>
 
-<h3>
-<a id="example" class="anchor" href="#example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h3>
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h2>
 
-<p>In a template file 'test.eps':   </p>
+<p>In a template file 'Test.eps':   </p>
 
 <pre><code>Hi &lt;%= $name %&gt;
 
-&lt;%# this is a comment %&gt;
+&lt;%# this is a comment -%&gt;
 Please buy me the following items:
-&lt;% 1..5 | %{ %&gt;
+&lt;% 1..5 | %{ -%&gt;
   - &lt;%= $_ %&gt; pigs ...
-&lt;% } %&gt;
+&lt;% } -%&gt;
 
-Dave is a &lt;% if($true) { %&gt; boy &lt;% } else { %&gt; girl &lt;% } %&gt;. 
+Dave is a &lt;% if($True) { %&gt;boy&lt;% } else { %&gt;girl&lt;% } %&gt;. 
 
 Thanks,
 Dave
 &lt;%= (Get-Date -f yyyy-MM-dd) %&gt;
 </code></pre>
 
-<p>Then render it in commandline:</p>
+<p>Then render it in on the command line:</p>
 
-<div class="highlight highlight-source-powershell"><pre><span class="pl-k">.</span> .\eps.ps1  <span class="pl-c"># load this tool into current PowerShell space</span>
+<div class="highlight highlight-source-powershell"><pre><span class="pl-c1">Import-Module</span> EPS
 
 <span class="pl-k">$</span><span class="pl-smi">name</span> <span class="pl-k">=</span> <span class="pl-s">"ABC"</span>
-<span class="pl-c1">Expand-Template</span> <span class="pl-k">-</span>file test.eps</pre></div>
+<span class="pl-c1">Invoke-EpsTemplate</span> <span class="pl-k">-</span>Path Test.eps</pre></div>
 
-<blockquote>
 <p>Here it is in non-safe mode (render template with values in current run space)
-To use safe mode: using <code>Expand-Template -file test.eps -safe</code> with binding values</p>
-</blockquote>
+To use safe mode: using <code>Invoke-EpsTemplate -Path Test.eps -Safe</code> with binding values</p>
 
 <p>It will produce:   </p>
 
-<pre><code>Hi ABC
+<pre><code>Hi dave
 
 Please buy me the following items:
   - 1 pigs ...
@@ -128,59 +147,22 @@ Dave is a boy.
 
 Thanks,
 Dave
-2014-06-09
+2016-12-07
 </code></pre>
 
 <p>Or you can use safe mode with data bindings:</p>
 
-<div class="highlight highlight-source-powershell"><pre><span class="pl-c1">Expand-Template</span> <span class="pl-k">-</span>file <span class="pl-k">$</span><span class="pl-smi">file_name</span> <span class="pl-k">-</span>safe <span class="pl-k">-</span>binding @{ name <span class="pl-k">=</span> <span class="pl-s">"dave"</span> }</pre></div>
+<div class="highlight highlight-source-powershell"><pre><span class="pl-c1">Invoke-EpsTemplate</span> <span class="pl-k">-</span>Path Test.eps <span class="pl-k">-</span>Safe <span class="pl-k">-</span>binding @{ name <span class="pl-k">=</span> <span class="pl-s">"dave"</span> }</pre></div>
 
-<p>which will generate same output.</p>
+<p>which will generate the same output.</p>
 
-<h3>
-<a id="more-examples" class="anchor" href="#more-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>More examples</h3>
+<h2>
+<a id="more-examples" class="anchor" href="#more-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>More examples</h2>
 
-<p>any statement result in a <code>&lt;% ... %&gt;</code> block will be placed at the template top (that's why you should use <code>&lt;%= ... %&gt;</code> instead):   </p>
-
-<div class="highlight highlight-source-powershell"><pre><span class="pl-k">$</span><span class="pl-smi">template</span> <span class="pl-k">=</span> <span class="pl-s">@'</span>
-<span class="pl-s">Hi, dave is a &lt;% if($true) { "boy" } else { "girl" } %&gt;</span>
-<span class="pl-s">'@</span>
-
-<span class="pl-c1">Expand-Template</span> <span class="pl-k">-</span>template <span class="pl-k">$</span><span class="pl-smi">template</span></pre></div>
-
-<p>will produce:   </p>
-
-<pre><code>boy
-Hi, dave is a 
-</code></pre>
-
-<p>for another instance, if template is</p>
-
-<pre><code>Hi dave
-Don't watch TV.
-
-Your wife
-&lt;% get-date -f yyyy-MM-dd %&gt;
-</code></pre>
-
-<p>It will produce:   </p>
-
-<pre><code>2014-06-10
-Hi dave
-Don't watch TV.
-
-Your wife
-</code></pre>
-
-<blockquote>
-<p>You should use <code>&lt;%= ... %&gt;</code> instead, since <code>&lt;%= $(get-date -f yyyy-MM-dd) %&gt;</code> produces the date string at the same place.</p>
-</blockquote>
-
-<p>You can use multi-line statements in <code>&lt;% ... %&gt;</code> block:   </p>
+<p>You can use multi-line statements in blocks:   </p>
 
 <div class="highlight highlight-source-powershell"><pre><span class="pl-k">$</span><span class="pl-smi">template</span> <span class="pl-k">=</span> <span class="pl-s">@'</span>
-<span class="pl-s"></span>
-<span class="pl-s">&lt;%</span>
+<span class="pl-s">&lt;%=</span>
 <span class="pl-s">  $name = "dave"</span>
 <span class="pl-s"></span>
 <span class="pl-s">  1..5 | %{</span>
@@ -191,22 +173,14 @@ Your wife
 <span class="pl-s">Hello, I'm &lt;%= $name %&gt;.</span>
 <span class="pl-s">'@</span>
 
-<span class="pl-c1">Expand-Template</span> <span class="pl-k">-</span>template <span class="pl-k">$</span><span class="pl-smi">template</span></pre></div>
+<span class="pl-c1">Invoke-EpsTemplate</span> <span class="pl-k">-</span>Template <span class="pl-k">$</span><span class="pl-smi">template</span></pre></div>
 
-<p>it will produce:   </p>
+<p>will produce:</p>
 
-<pre><code>haha
-haha
-haha
-haha
-haha
+<pre><code>haha haha haha haha haha
 
 Hello, I'm dave.
 </code></pre>
-
-<blockquote>
-<p>Reminder: the output of statements in <code>&lt;% ... %&gt;</code> block will be put at top, not in-place </p>
-</blockquote>
 
 <h2>
 <a id="contribution" class="anchor" href="#contribution" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contribution</h2>
@@ -216,7 +190,7 @@ Hello, I'm dave.
 <li>Maintained now and extended by <a href="https://github.com/dbroeglin">Dominique Broeglin (@dbroeglin)</a>, thank you pal 谢谢！</li>
 </ul>
 
-<p>Help find more bugs! Or find more usage of this tool ...
+<p>Help find more bugs! Or find more usage of this tool...
 Author's email: <a href="mailto:eyaswoo@163.com">eyaswoo@163.com</a></p>
       </section>
       <footer>
