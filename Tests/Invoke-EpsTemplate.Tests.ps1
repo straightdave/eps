@@ -169,12 +169,6 @@ function EpsTests {
 			$Binding  = @{ 'A' = @{ 'B' = 'XXX' }}
 		}
 
-		It 'expands "<%= $B %>" to ""' {
-			{
-				$binding | Invoke-EpsTemplate -Template '<%= $B %>'
-			} | Should Throw "The variable '`$B' cannot be retrieved"
-		}
-
 		It 'expands "<%= $A.B %>" to "XXX"' {
 			$binding | Invoke-EpsTemplate -Template '<%= $A.B %>' | Should Be "XXX"
 		}
