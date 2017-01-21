@@ -3,7 +3,11 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 . "$here\..\EPS\New-EpsTemplateScript.ps1"
 . "$here\..\EPS\Invoke-EpsTemplate.ps1"
 
-Describe 'Invoke-EpsTemplate' {
+function EpsTests {
+	Param([switch]$WithSafe)
+	
+	$PSDefaultParameterValues=@{"Invoke-EpsTemplate:Safe" = $WithSafe}
+
 	Context 'with trivial templates' {
 		It '"" expands to ""' {
 			Invoke-EpsTemplate -Template "" | Should Be ""
@@ -165,12 +169,6 @@ Describe 'Invoke-EpsTemplate' {
 			$Binding  = @{ 'A' = @{ 'B' = 'XXX' }}
 		}
 
-		It 'expands "<%= $B %>" to ""' {
-			{
-				$binding | Invoke-EpsTemplate -Template '<%= $B %>'
-			} | Should Throw "The variable '`$B' cannot be retrieved"
-		}
-
 		It 'expands "<%= $A.B %>" to "XXX"' {
 			$binding | Invoke-EpsTemplate -Template '<%= $A.B %>' | Should Be "XXX"
 		}
@@ -184,6 +182,12 @@ Describe 'Invoke-EpsTemplate' {
 			{ Invoke-EpsTemplate } | Should Throw "Parameter set cannot be resolved using the specified named parameters"
 		}
 	}
+}
 
+Describe 'Invoke-EpsTemplate' {
+	EpsTests
 }
 	
+Describe 'Invoke-EpsTemplate -Safe' {
+	EpsTests -WithSafe
+}

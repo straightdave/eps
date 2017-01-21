@@ -24,10 +24,10 @@ function Invoke-EpsTemplate {
 
     if($Safe) {
         $block = {
-            Param([String]$Script, [Hashtable]$Binding)
+            Param([ScriptBlock]$Script, [Hashtable]$Binding)
 
             $Binding.GetEnumerator() | ForEach-Object { New-Variable -Name $_.Key -Value $_.Value }
-            $templateScriptBlock.Invoke()    
+            $Script.Invoke()
         }
 
         try {
@@ -35,8 +35,8 @@ function Invoke-EpsTemplate {
             $powershell.`
                 AddScript($block).`
                 AddParameter("Binding", $Binding).`
-                AddParameter("Script", $script).`
-                Invoke()[0]
+                AddParameter("Script", $templateScriptBlock).`
+                Invoke()
         } finally {
             if ($powershell) {
                 $powershell.Dispose()
