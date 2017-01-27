@@ -1,5 +1,11 @@
 # EPS Release History
 
+## 0.3.2 (2017-01-27)
+
+ * Fixed safe mode [Dominique Broeglin]
+ * Added tests for the -safe paramter [Dominique Broeglin]
+ * Meta tests should work on PS v2.0 too [Dominique Broeglin]
+
 ## 0.3.1 (2016-12-12)
 
  * Added module loading test and corrected PSM1 issue [Dominique Broeglin]

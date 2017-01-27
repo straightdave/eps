@@ -5,7 +5,7 @@
 ModuleToProcess = 'EPS.psm1' # using ModuleToProcess for PS 2.0 compatibility
 
 # Version number of this module.
-ModuleVersion = '0.3.1'
+ModuleVersion = '0.3.2'
 
 # ID used to uniquely identify this module
 GUID = 'f24c1ca7-e4fd-4b7d-8ff8-75ef7f7ea162'
