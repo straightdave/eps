@@ -1,5 +1,11 @@
 # EPS Release History
 
+## 0.3.3 (2017-03-11)
+
+ * Also fixed and issue when concatenating two code blocks [Dominique Broeglin]
+ * #14 Fixed EOL trimming [Dominique Broeglin]
+ * Optimized generated code (trimming spaces around code blocks)
+
 ## 0.3.2 (2017-01-27)
 
  * Fixed safe mode [Dominique Broeglin]

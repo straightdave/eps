@@ -5,7 +5,7 @@
 ModuleToProcess = 'EPS.psm1' # using ModuleToProcess for PS 2.0 compatibility
 
 # Version number of this module.
-ModuleVersion = '0.3.2'
+ModuleVersion = '0.3.3'
 
 # ID used to uniquely identify this module
 GUID = 'f24c1ca7-e4fd-4b7d-8ff8-75ef7f7ea162'
@@ -17,7 +17,15 @@ Author = 'Dave Wu, Dominique Broeglin'
 Copyright = '(c) 2014 Dave Wu. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Templating tool for PowerShell'
+Description = @'
+EPS (Embedded PowerShell), inspired by ERB (see https://en.wikipedia.org/wiki/ERuby), is a 
+templating language that embeds PowerShell code into a text document. It is conceptually 
+and syntactically similar to ERB for Ruby or Twig (see http://twig.sensiolabs.org/) for PHP.
+
+EPS can be used to generate any kind of text. The example below illustrates generating
+plain text, but it could be used to generate HTML in a web application or PowerShell code as
+in the Forge Module generator (see https://github.com/dbroeglin/Forge.Module)
+'@
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
