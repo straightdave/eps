@@ -64,8 +64,10 @@ function New-EpsTemplateScript {
         $tail          = $Match.Groups["tailch"].Value
         $rspace        = $Match.Groups["rspace"].Value
 
-        if ($ind -ne '-') {
+        if (($ind -ne '-') -and ($content -ne "")) {
             Add-String $content
+        } else {
+            Add-Code ";"
         }
         switch ($ind) {
             '=' {

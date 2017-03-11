@@ -149,11 +149,34 @@ function EpsTests {
 			# see issue #14
 			Invoke-EpsTemplate -Template "<% `$a = 5 %>`n<% if (`$a) { } %>" -Binding $Binding | Should Be "`n"
 		}		
-		It 'expands "<% $a = 5 -%>`n<% if ($a) { } %>" to "5"' {
+		It 'expands "<% $a = 5 -%>`n<% if ($a) { } %>" to ""' {
 			# see issue #14
 			Invoke-EpsTemplate -Template "<% `$a = 5 -%>`n<% if (`$a) { } %>" -Binding $Binding | Should Be ""
 		}
-
+		It 'expands "<% $a = 5 %><% $a.GetHashCode() %>" to ""' {
+			# see issue #14
+			Invoke-EpsTemplate -Template "<% `$a = 5 %><% `$a.GetHashCode() %>" -Binding $Binding | Should Be ""
+		}
+		It 'expands "<% $a = 5 %><%- $a.GetHashCode() %>" to ""' {
+			# see issue #14
+			Invoke-EpsTemplate -Template "<% `$a = 5 %><%- `$a.GetHashCode() %>" -Binding $Binding | Should Be ""
+		}
+		It 'expands "<% $a = 5 %>`n<%- $a.GetHashCode() %>" to "`n"' {
+			# see issue #14
+			Invoke-EpsTemplate -Template "<% `$a = 5 %>`n<%- `$a.GetHashCode() %>" -Binding $Binding | Should Be "`n"
+		}
+		It 'expands "<% $a = 5 %> <%- $a.GetHashCode() %>" to ""' {
+			# see issue #14
+			Invoke-EpsTemplate -Template "<% `$a = 5 %> <%- `$a.GetHashCode() %>" -Binding $Binding | Should Be ""
+		}
+		It 'expands "<% $a = 5 -%><%- $a.GetHashCode() %>" to ""' {
+			# see issue #14
+			Invoke-EpsTemplate -Template "<% `$a = 5 -%><%- `$a.GetHashCode() %>" -Binding $Binding | Should Be ""
+		}		
+		It 'expands "<% $a = 5 -%>`n<%- $a.GetHashCode() %>" to ""' {
+			# see issue #14
+			Invoke-EpsTemplate -Template "<% `$a = 5 -%>`n<%- `$a.GetHashCode() %>" -Binding $Binding | Should Be ""
+		}		
 	}
 	Context 'with template "Hello <%= $A %>!" and with pipeline' {
 		$Template = 'Hello <%= $A %>!'
