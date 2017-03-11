@@ -69,14 +69,14 @@ function New-EpsTemplateScript {
         }
         switch ($ind) {
             '=' {
-                Add-Expression $code
+                Add-Expression $code.Trim()
             }
             '-' {
                 Add-String ($content -replace '(?smi)([\n\r]+|\A)[ \t]+\z', '$1')
-                Add-Code $code
+                Add-Code $code.Trim()
             }
             '' {
-                Add-Code $code
+                Add-Code $code.Trim()
             }
             '%' {
                 Add-LiteralString "`$sb.Append('<%", $code, ">');"
@@ -87,6 +87,8 @@ function New-EpsTemplateScript {
         }
         if (($ind -ne '%') -and (($tail -ne '-') -or ($rspace -match '^[^\r\n]'))) {
             Add-String $rspace -NoEscape
+        } else {
+            Add-Code ";"
         }
     }
     if ($position -eq 0) {

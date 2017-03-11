@@ -145,6 +145,15 @@ function EpsTests {
 		It 'expands "<%# something -%>`na" to "a"' {
 			Invoke-EpsTemplate -Template "<%# something -%>`na" -Binding $Binding | Should Be "a"
 		}
+		It 'expands "<% $a = 5 %>`n<% if ($a) { } %>" to "`n"' {
+			# see issue #14
+			Invoke-EpsTemplate -Template "<% `$a = 5 %>`n<% if (`$a) { } %>" -Binding $Binding | Should Be "`n"
+		}		
+		It 'expands "<% $a = 5 -%>`n<% if ($a) { } %>" to "5"' {
+			# see issue #14
+			Invoke-EpsTemplate -Template "<% `$a = 5 -%>`n<% if (`$a) { } %>" -Binding $Binding | Should Be ""
+		}
+
 	}
 	Context 'with template "Hello <%= $A %>!" and with pipeline' {
 		$Template = 'Hello <%= $A %>!'
