@@ -1,5 +1,6 @@
 Set-StrictMode -Version 2
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+. "$here\..\EPS\Each.ps1"
 . "$here\..\EPS\New-EpsTemplateScript.ps1"
 . "$here\..\EPS\Invoke-EpsTemplate.ps1"
 
@@ -214,6 +215,17 @@ function EpsTests {
 			{ Invoke-EpsTemplate } | Should Throw "Parameter set cannot be resolved using the specified named parameters"
 		}
 	}
+
+	if ($psversiontable.PSVersion.Major  -ge 3) {
+		Context 'with binding @{ L = @(1, 2, 3) }' {
+			BeforeEach {
+				$Binding  = @{ L = @(1, 2, 3) }
+			}
+			It 'expands "<% $L | Each { %><%= $Index %>. <%= $_ %><% } -Join ":" %>" to "0/1:1/2:2/3"' {
+				Invoke-EpsTemplate -Template '<% $L | Each { %><%= $Index %>/<%= $_ %><% } -Join ":" %>' -Binding $Binding | Should Be "0/1:1/2:2/3"
+			}
+		}
+	}	
 }
 
 Describe 'Invoke-EpsTemplate' {
