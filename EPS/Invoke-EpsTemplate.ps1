@@ -33,6 +33,7 @@ function Invoke-EpsTemplate {
         try {
             $powershell = [powershell]::Create()
             $powershell.`
+                AddScript((Get-Content "$PSScriptRoot/Each.ps1" -Raw)).`
                 AddScript($block).`
                 AddParameter("Binding", $Binding).`
                 AddParameter("Script", $templateScriptBlock).`
