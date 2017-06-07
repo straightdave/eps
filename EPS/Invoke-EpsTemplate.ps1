@@ -16,7 +16,12 @@ function Invoke-EpsTemplate {
     )   
     
     if ($PSCmdlet.ParameterSetName -eq 'File template') {
-        $Template = [IO.File]::ReadAllText($Path)
+        $rootedPath = $Path
+        if (![IO.Path]::isPathRooted($Path)) {
+            $rootedPath = Join-Path (Get-Location) $Path
+        }
+        
+        $Template = [IO.File]::ReadAllText($rootedPath)
     }
 
     $templateScriptBlock = New-EpsTemplateScript -Template $Template
