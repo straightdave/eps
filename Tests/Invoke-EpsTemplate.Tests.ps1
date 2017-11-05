@@ -1,6 +1,7 @@
 Set-StrictMode -Version 2
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 . "$here\..\EPS\Each.ps1"
+. "$here\..\EPS\Get-OrElse.ps1"
 . "$here\..\EPS\New-EpsTemplateScript.ps1"
 . "$here\..\EPS\Invoke-EpsTemplate.ps1"
 
@@ -210,6 +211,31 @@ function EpsTests {
 			$binding | Invoke-EpsTemplate -Template "<%= `$A.B`n %>" | Should Be "XXX"
 		}
 	}
+
+	Context "with @{ 'N' = `$Null; 'EA' = @(); 'E' = ''; 'V' = 'A'; 'AV' = @('A') }" {
+		$Binding = @{ 'N' = $Null; 'EA' = @(); 'E' = ''; 'V' = 'A'; 'AV' = @('A') }
+
+		It 'expands "<%= Get-OrElse $N "default" %>" to "default"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $N "default" %>' | Should Be "default"
+		}
+
+		It 'expands "<%= Get-OrElse $EA "default" %>" to "default"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $EA "default" %>' | Should Be "default"
+		}
+
+		It 'expands "<%= Get-OrElse $E "default" %>" to "default"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $E "default" %>' | Should Be "default"
+		}
+
+		It 'expands "<%= Get-OrElse $V "default" %>" to "A"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $V "default" %>' | Should Be "A"
+		}
+
+		It 'expands "<%= Get-OrElse $AV "default" %>" to "A"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $AV "default" %>' | Should Be "A"
+		}
+	}
+
 	Context 'without Template or File arguments' {
 		It 'should throw an exception ' {
 			{ Invoke-EpsTemplate } | Should Throw "Parameter set cannot be resolved using the specified named parameters"
