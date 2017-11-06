@@ -2,7 +2,7 @@ function Get-OrElse {
     Param(
         $Value,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$True)]
         $DefaultValue
     )
     if ([string]::IsNullOrEmpty($Value)) {
