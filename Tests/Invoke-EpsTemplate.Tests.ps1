@@ -1,6 +1,7 @@
 Set-StrictMode -Version 2
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 . "$here\..\EPS\Each.ps1"
+. "$here\..\EPS\Get-OrElse.ps1"
 . "$here\..\EPS\New-EpsTemplateScript.ps1"
 . "$here\..\EPS\Invoke-EpsTemplate.ps1"
 
@@ -210,19 +211,125 @@ function EpsTests {
 			$binding | Invoke-EpsTemplate -Template "<%= `$A.B`n %>" | Should Be "XXX"
 		}
 	}
+
+	Context "with @{ 'N' = `$Null; 'EA' = @(); 'E' = ''; 'V' = 'A'; 'AV' = @('A') }" {
+		$Binding = @{ 'N' = $Null; 'EA' = @(); 'E' = ''; 'V' = 'A'; 'AV' = @('A') }
+
+		It 'expands "<%= Get-OrElse $N "default" %>" to "default"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $N "default" %>' | Should Be "default"
+		}
+
+		It 'expands "<%= Get-OrElse $EA "default" %>" to "default"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $EA "default" %>' | Should Be "default"
+		}
+
+		It 'expands "<%= Get-OrElse $E "default" %>" to "default"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $E "default" %>' | Should Be "default"
+		}
+
+		It 'expands "<%= Get-OrElse $V "default" %>" to "A"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $V "default" %>' | Should Be "A"
+		}
+
+		It 'expands "<%= Get-OrElse $AV "default" %>" to "A"' {
+			$Binding | Invoke-EpsTemplate -Template '<%= Get-OrElse $AV "default" %>' | Should Be "A"
+		}
+	}
+
 	Context 'without Template or File arguments' {
 		It 'should throw an exception ' {
 			{ Invoke-EpsTemplate } | Should Throw "Parameter set cannot be resolved using the specified named parameters"
 		}
 	}
 
-	if ($psversiontable.PSVersion.Major  -ge 3) {
-		Context 'with binding @{ L = @(1, 2, 3) }' {
-			BeforeEach {
-				$Binding  = @{ L = @(1, 2, 3) }
+	if ($psversiontable.PSVersion.Major -ge 3) {	
+		$PipelineWithJoinTemplate    = '<% $L | Each { %><%= $Index %>/<%= $_ %><% } -Join ":" %>'
+		$ArgumentWithJoinTemplate    = '<% Each -InputObject $L { %><%= $Index %>/<%= $_ %><% } -Join ":" %>'
+		$PipelineWithoutJoinTemplate = '<% $L | Each { %><%= $Index %>/<%= $_ %><% } %>'
+		$ArgumentWithoutJoinTemplate = '<% Each -InputObject $L { %><%= $Index %>/<%= $_ %><% } %>'
+		
+		Context 'with binding @{ L = @() }' {
+			$Binding  = @{ L = @() }			
+			$TestCases = @(
+				@{
+					Template = $PipelineWithJoinTemplate
+					ExpectedResult = ''
+				}
+				@{
+					Template = $ArgumentWithJoinTemplate
+					ExpectedResult = ''
+				}
+				@{
+					Template = $ArgumentWithoutJoinTemplate
+					ExpectedResult = ''
+				}
+				@{
+					Template = $ArgumentWithoutJoinTemplate
+					ExpectedResult = ''
+				}
+			)
+
+			It 'expands "<Template>" to "<ExpectedResult>"' -TestCases $TestCases {
+				Param($Template, $ExpectedResult)
+				
+				Invoke-EpsTemplate -Template $Template -Binding $Binding | Should Be $ExpectedResult
 			}
-			It 'expands "<% $L | Each { %><%= $Index %>. <%= $_ %><% } -Join ":" %>" to "0/1:1/2:2/3"' {
-				Invoke-EpsTemplate -Template '<% $L | Each { %><%= $Index %>/<%= $_ %><% } -Join ":" %>' -Binding $Binding | Should Be "0/1:1/2:2/3"
+		}
+
+		Context 'with binding @{ L = @(1) }' {
+			$Binding  = @{ L = @(1) }			
+			$TestCases = @(
+				@{
+					Template = $PipelineWithJoinTemplate
+					ExpectedResult = '0/1'
+				}
+				@{
+					Template = $ArgumentWithJoinTemplate
+					ExpectedResult = '0/1'
+				}
+				@{
+					Template = $ArgumentWithoutJoinTemplate
+					ExpectedResult = '0/1'
+				}
+				@{
+					Template = $ArgumentWithoutJoinTemplate
+					ExpectedResult = '0/1'
+				}
+			)
+
+			It 'expands "<Template>" to "<ExpectedResult>"' -TestCases $TestCases {
+				Param($Template, $ExpectedResult)
+				
+				Invoke-EpsTemplate -Template $Template -Binding $Binding | Should Be $ExpectedResult
+			}
+		}
+
+
+		Context 'with binding @{ L = @(1, 2, 3) }' {
+			$Binding  = @{ L = @(1, 2, 3) }			
+			$TestCases = @(
+				@{
+					Template = $PipelineWithJoinTemplate
+					ExpectedResult = '0/1:1/2:2/3'
+				}
+				@{
+					Template = $ArgumentWithJoinTemplate
+					ExpectedResult = '0/1:1/2:2/3'
+				}
+				@{
+					Template = $ArgumentWithoutJoinTemplate
+					ExpectedResult = '0/11/22/3'
+				}
+				@{
+					Template = $ArgumentWithoutJoinTemplate
+					ExpectedResult = '0/11/22/3'
+				}
+			)
+
+			It 'expands "<Template>" to "<ExpectedResult>"' -TestCases $TestCases {
+				Param($Template, $ExpectedResult)
+				
+				Invoke-EpsTemplate -Template $Template -Binding $Binding | Should Be $ExpectedResult
 			}
 		}
 	}	
