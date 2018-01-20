@@ -13,7 +13,7 @@ in the [Forge Module generator][forge_module].
 EPS is available in the [PowerShell Gallary](https://www.powershellgallery.com/packages/EPS).
 You can install the module with the following command:
 
-```Powershell
+```powershell
 Install-Module -Name EPS
 ```
 
@@ -52,7 +52,21 @@ with a `Hashtable` containing key/value pairs.
 
 ## Example
 
-In a template file 'Test.eps':
+A very simple example of EPS would be :
+
+```powershell
+$name = "Dave"
+
+Invoke-EpsTemplate -Template 'Hello <%= $name %>!'
+```
+
+This script produces the following result:
+
+```
+Hello Dave!
+```
+
+In a template file `Test.eps`:
 
 ```
 Hi <%= $name %>
@@ -79,7 +93,7 @@ Invoke-EpsTemplate -Path Test.eps
 ```
 
 Here it is in non-safe mode (render template with values in current run space)
-To use safe mode: using `Invoke-EpsTemplate -Path Test.eps -Safe` with binding values
+To use safe mode (render the template in an isolated scope) execute: `Invoke-EpsTemplate -Path Test.eps -Safe` with binding values
 
 It will produce:
 
@@ -114,27 +128,19 @@ which will generate the same output.
 You can use multi-line statements in blocks:
 
 ```powershell
-$template = @'
-<%=
-  $name = "dave"
+$name = "Dave"
 
-  1..5 | %{
-    "haha"
-  }
-%>
-
-Hello, I'm <%= $name %>.
+Invoke-EpsTemplate -Template @'
+Hello <%= $name %>!
+Today is <%= Get-Date -UFormat %x %>.
 '@
-
-Invoke-EpsTemplate -Template $template
 ```
 
 will produce:
 
 ```
-haha haha haha haha haha
-
-Hello, I'm dave.
+Hello Dave!
+Today is 11/12/17.
 ```
 
 ### Iterating and joining the results
@@ -147,7 +153,9 @@ element and finally join the generated blocks together with a separator.
 In an expression block we can use the following idiomatic PowerShell snippet:
 
 ```powershell
+Invoke-EpsTemplate -Template @'
 <%= ("Id", "Name", "Description" | ForEach-Object { "[String]`$$_" }) -Join ",`n" -%>
+'@
 ```
 which would generate the following result:
 
@@ -161,31 +169,41 @@ which would generate the following result:
 However, due to EPS internal workings, the following code would not work:
 
 ```powershell
+Invoke-EpsTemplate -Template @'
 <% ("Id", "Name", "Description" | ForEach-Object { -%>
 [String]$<%= $_ -%>
-<% }) -Join ",`n" -%>
+<% }) -join ",`n" -%>
+'@
 ```
 
-The `-Join` operator is ignored by EPS:
+The `-join` operator is ignored by EPS:
 
 ```
 [String]$Id[String]$Name[String]$Description
 ```
 
-EPS provides an internal `Each` (can only be used for PS v3 and above) function whose
-behavior is similar to `ForEach-Object` but achieves the desired result:
+This is expected behavior because `-join` is applied to the result of 
+`ForEach-Object` which is defined inside a _CODE_ block and should not produce
+any output.
 
-```
+EPS provides an internal `Each` function whose behavior is similar to 
+`ForEach-Object` but achieves the desired result inside a template :
+
+```PowerShell
 Each [-Process] <scriptblock> [-InputObject <Object[]>] [-Begin <scriptblock>] [-End <scriptblock>] [-Join <string>]
 ```
+
+`Each` can only be used in PS v3 or above.
 
 This snippet of EPS would generate the desired result (notice that `-Join` is a parameter of `Each`
 and is not applied to its result value as would be the case with the `-join` operator):
 
 ```powershell
+Invoke-EpsTemplate -Template @'
 <% "Id", "Name", "Description" | Each { -%>
 [String]$<%= $_ -%>
 <% } -Join ",`n" -%>
+'@
 ```
 
 and generate:
@@ -199,12 +217,14 @@ and generate:
 In some cases it can be useful to also generate a prefix and suffix to the iterated part:
 
 ```powershell
+Invoke-EpsTemplate -Template @'
 <% "Id", "Name", "Description" | Each { -%>
 [String]$<%= $_ -%>
 <% } -Begin { %>[NSSession]$Session<% } -End { %>[String]$LogLevel<% } -Join ",`n" -%>
+'@
 ```
 
-would generate the following result:
+will generate:
 
 ```powershell
 [NSSession]$Session,
@@ -220,14 +240,16 @@ If you want to prefix and suffix, _without_ joining the prefix and suffix, use t
 pattern:
 
 ```powershell
+Invoke-EpsTemplate -Template @'
 Param(
 <% "Id", "Name", "Description" | Each { -%>
     [String]$<%= $_ -%>
 <% } -Join ",`n" %>
 )
+'@
 ```
 
-Which would generate the following result:
+Which will generate:
 
 ```powershell
 Param(
@@ -244,9 +266,11 @@ current item. The `Each` function exposes a `$index` variable to the script bloc
 The `$index` variable starts at 0 for the first element.
 
 ```powershell
+Invoke-EpsTemplate -Template @'
 <% "Dave", "Bob", "Alice" | Each { -%>
 <%= $Index + 1 %>. <%= $_ %>
 <% } -%>
+'@
 ```
 
 would generate the following listing:
@@ -255,7 +279,36 @@ would generate the following listing:
 1. Dave
 2. Bob
 3. Alice
+```
 
+### Handling default values
+
+Using default values if the provided variable is `$Null` or empty (as returned by the `[string]::IsNullOrEmpty` function) is a very common pattern which can be done easily with a template like:
+
+```powershell
+$config = [PSCustomObject]@{
+  Host = "localhost"
+  #Port = "8080" # this would be an optional configuration value
+}
+Invoke-EpsTemplate -Template @'
+<%= $config.Host 
+%>:<%= 
+  if ([string]::IsNullOrEmpty($config.Port)) { "80" } else { $config.Port }
+%>
+'@
+```
+
+EPS provides a `Get-OrElse` function that allows for a shorter version:
+
+```powershell
+$config = [PSCustomObject]@{
+  Host = "localhost"
+  #Port = "8080" # this would be an optional configuration value
+}
+Invoke-EpsTemplate -Template @'
+<%= $config.Host %>:<%= Get-OrElse $config.Port "80" %>
+<%= $config.Host %>:<%=  $config.Port | Get-OrElse -Default "80" %>
+'@
 ```
 
 ## Contribution

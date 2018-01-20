@@ -81,6 +81,9 @@ function EpsTests {
 			$Binding  = @{ A = "Titi"; B = "Tutu" }
 		}
 		# expression tags
+		It 'expands "Hello <%= ($A) %>!" to "Hello Titi !"' {
+			Invoke-EpsTemplate -Template 'Hello <%= ($A) %>!' -Binding $Binding | Should Be "Hello Titi!"
+		}
 		It 'expands "Hello <%=`n$A %>!" to "Hello Titi !"' {
 			Invoke-EpsTemplate -Template "Hello <%=`n`$A %>!" -Binding $Binding | Should Be "Hello Titi!"
 		}
