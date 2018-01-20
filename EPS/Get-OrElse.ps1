@@ -1,12 +1,14 @@
 function Get-OrElse {
+    [CmdletBinding()]
     Param(
-        $Value,
+        [Parameter(ValueFromPipeline = $True)]
+        [Object]$Value,
 
-        [Parameter(Mandatory=$True)]
-        $DefaultValue
+        [Parameter(Mandatory = $True)]
+        [Object]$Default
     )
     if ([string]::IsNullOrEmpty($Value)) {
-        $DefaultValue
+        $Default
     } else {
         $Value
     }

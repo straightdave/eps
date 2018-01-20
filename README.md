@@ -307,6 +307,7 @@ $config = [PSCustomObject]@{
 }
 Invoke-EpsTemplate -Template @'
 <%= $config.Host %>:<%= Get-OrElse $config.Port "80" %>
+<%= $config.Host %>:<%=  $config.Port | Get-OrElse -Default "80" %>
 '@
 ```
 
