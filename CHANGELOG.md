@@ -1,5 +1,18 @@
 # EPS Release History
 
+## 0.5.0
+
+ * Allow Get-OrElse to use pipeline input [Dominique Broeglin]
+ * Improved README documentation [Dominique Broeglin]
+ * Added test in context of #20 [Dominique Broeglin]
+ * Added Get-OrElse function (optimized function loading when using -Safe) [Dominique Broeglin]
+ * Better unit testing of the 'Each' helper function [Dominique Broeglin]
+ * Allow relative path to 'Invoke-EpsTemplate -Path' [kimura wataru]
+
+## 0.4.0
+
+ * Added an 'Each' function for iteration joining [Dominique Broeglin]
+
 ## 0.3.3 (2017-03-11)
 
  * Also fixed and issue when concatenating two code blocks [Dominique Broeglin]
