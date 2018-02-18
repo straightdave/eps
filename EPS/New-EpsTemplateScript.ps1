@@ -5,7 +5,8 @@ function New-EpsTemplateScript {
         [String]$Template
     )
     $position = 0
-    $Pattern = [regex]"(?sm)<%(?<ind>={1,2}|-|#|%)?(?<code>.*?)(?<tailch>[-=])?%>(?<rspace>[ \t]*\r?\n)?"
+    $Pattern = [regex]("(?sm)(?<lit><%%|%%>)|" + 
+        "<%(?<ind>={1,2}|-|#)?(?<code>.*?)(?<tailch>[-=])?(?<!%)%>(?<rspace>[ \t]*\r?\n)?")
     $StringBuilder = New-Object -TypeName "System.Text.StringBuilder"
 
     function Add-Prolog {
@@ -15,12 +16,9 @@ function New-EpsTemplateScript {
     }
 
     function Add-String {
-        Param([String]$Value, [switch]$NoEscape) 
+        Param([String]$Value) 
 
         if ($Value) {
-            if (!$NoEscape) {
-                $Value = ($Value -replace "<%%", "<%") -replace "%%>", "%>"
-            }
             $Value = $Value -replace '([`"$])', '`$1'
             [void]$StringBuilder.Append(";`$sb.Append(`"").Append($Value).Append("`");")
         }
@@ -59,38 +57,50 @@ function New-EpsTemplateScript {
         $contentLength = $match.Index - $position
         $content       = $Template.Substring($position, $contentLength)
         $position      = $match.Index + $match.Length
-        $ind           = $Match.Groups["ind"].Value
-        $code          = $Match.Groups["code"].Value
-        $tail          = $Match.Groups["tailch"].Value
-        $rspace        = $Match.Groups["rspace"].Value
+        $lit           = $match.Groups["lit"]
 
-        if (($ind -ne '-') -and ($content -ne "")) {
-            Add-String $content
+        if ($lit.Success) {
+            if ($contentLength -ne 0) {
+                Add-String $content
+            }
+            switch ($lit.Value) {
+                "<%%" {
+                    Add-String "<%"
+                }
+                "%%>" {
+                    Add-String "%>"
+                }
+            }
         } else {
-            Add-Code ";"
-        }
-        switch ($ind) {
-            '=' {
-                Add-Expression $code.Trim()
+            $ind           = $match.Groups["ind"].Value
+            $code          = $match.Groups["code"].Value
+            $tail          = $match.Groups["tailch"].Value
+            $rspace        = $match.Groups["rspace"].Value
+
+            if (($ind -ne '-') -and ($contentLength -ne 0)) {
+                Add-String $content
+            } else {
+                Add-Code ";"
             }
-            '-' {
-                Add-String ($content -replace '(?smi)([\n\r]+|\A)[ \t]+\z', '$1')
-                Add-Code $code.Trim()
+            switch ($ind) {
+                '=' {
+                    Add-Expression $code.Trim()
+                }
+                '-' {
+                    Add-String ($content -replace '(?smi)([\n\r]+|\A)[ \t]+\z', '$1')
+                    Add-Code $code.Trim()
+                }
+                '' {
+                    Add-Code $code.Trim()
+                }
+                '#' { # Do nothing
+                }
             }
-            '' {
-                Add-Code $code.Trim()
+            if (($ind -ne '%') -and (($tail -ne '-') -or ($rspace -match '^[^\r\n]'))) {
+                Add-String $rspace
+            } else {
+                Add-Code ";"
             }
-            '%' {
-                Add-LiteralString "`$sb.Append('<%", $code, ">');"
-                Add-String $rspace -NoEscape
-            }
-            '#' {
-            }
-        }
-        if (($ind -ne '%') -and (($tail -ne '-') -or ($rspace -match '^[^\r\n]'))) {
-            Add-String $rspace -NoEscape
-        } else {
-            Add-Code ";"
         }
     }
     if ($position -eq 0) {

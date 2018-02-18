@@ -29,7 +29,9 @@ function EpsTests {
 		It '"%%>" expands to "%>"' {
 			Invoke-EpsTemplate -Template "%%>" | Should Be "%>"
 		}
+	}
 
+	Context 'with literal markers' {
 		It '"<%% a %%>" expands to "<% a %>"' {
 			Invoke-EpsTemplate -Template "<%% a %%>" | Should Be "<% a %>"
 		}
@@ -39,7 +41,27 @@ function EpsTests {
 		It '"<%% a %%>`na" expands to "<% a %>`na"' {
 			Invoke-EpsTemplate -Template "<%% a %%>`na" | Should Be "<% a %>`na"
 		}
+		It '"<%% `n %%>" expands to "<% `n %>"' {
+			Invoke-EpsTemplate -Template "<%% `n %%>" | Should Be "<% `n %>"
+		}
+		It '"<%% <%= 1 %> %%>" expands to "<% 1 %>"' {
+			Invoke-EpsTemplate -Template "<%% <%= 1 %> %%>" | Should Be "<% 1 %>"
+		}
+		It '"<%%<%= 1 %> %%>" expands to "<% 1 %>"' {
+			Invoke-EpsTemplate -Template "<%%<%= 1 %> %%>" | Should Be "<%1 %>"
+		}
+		It '"<%% <%= 1 %>%%>" expands to "<% 1 %>"' {
+			Invoke-EpsTemplate -Template "<%% <%= 1 %>%%>" | Should Be "<% 1%>"
+		}
+		It '"<%% <%= 1 -%>`n%%>" expands to "<% 1 %>"' {
+			Invoke-EpsTemplate -Template "<%% <%= 1 -%>`n%%>" | Should Be "<% 1%>"
+		}
+		It '"<%%= <%= 1 %> %%>" expands to "<% 1 %>"' {
+			Invoke-EpsTemplate -Template "<%%= <%= 1 %> %%>" | Should Be "<%= 1 %>"
+		}
+	}
 
+	Context "with comments" {
 		It '"a<%# b %>a" expands to "aa"' {
 			Invoke-EpsTemplate -Template "a<%# b %>a" | Should Be "aa"
 		}
@@ -49,6 +71,12 @@ function EpsTests {
 		It '"a<%# b %> a" expands to "a a"' {
 			Invoke-EpsTemplate -Template "a<%# b %> a" | Should Be "a a"
 		}		
+		It '"a <%# <%% %> a" expands to "a a"' {
+			Invoke-EpsTemplate -Template "a<%# <%% %> a" | Should Be "a a"
+		}
+		It '"a <%# %%> %> a" expands to "a a"' {
+			Invoke-EpsTemplate -Template "a<%# %%> %> a" | Should Be "a a"
+		}
 	}
 
 	Context 'with template "```"`$Test#``0``"' {
