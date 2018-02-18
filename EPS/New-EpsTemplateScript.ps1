@@ -93,10 +93,6 @@ function New-EpsTemplateScript {
                 '' {
                     Add-Code $code.Trim()
                 }
-                '%' {
-                    Add-LiteralString "`$sb.Append('<%", $code, ">');"
-                    Add-String $rspace
-                }
                 '#' { # Do nothing
                 }
             }
