@@ -1,11 +1,11 @@
 # EPS Release History
 
-## 0.5.1
+## 0.5.1 (2018-02-25)
 
  * Removed dead code (could not be called) [Dominique Broeglin]
  * Fixed #25 and other edge cases around literal `<%%` and `%%>` [Dominique Broeglin]
 
-## 0.5.0
+## 0.5.0 (2018-01-20)
 
  * Allow Get-OrElse to use pipeline input [Dominique Broeglin]
  * Improved README documentation [Dominique Broeglin]
@@ -14,7 +14,7 @@
  * Better unit testing of the 'Each' helper function [Dominique Broeglin]
  * Allow relative path to 'Invoke-EpsTemplate -Path' [kimura wataru]
 
-## 0.4.0
+## 0.4.0 (2017-03-26)
 
  * Added an 'Each' function for iteration joining [Dominique Broeglin]
 
