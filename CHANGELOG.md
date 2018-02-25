@@ -1,5 +1,10 @@
 # EPS Release History
 
+## 0.5.1
+
+ * Removed dead code (could not be called) [Dominique Broeglin]
+ * Fixed #25 and other edge cases around literal `<%%` and `%%>` [Dominique Broeglin]
+
 ## 0.5.0
 
  * Allow Get-OrElse to use pipeline input [Dominique Broeglin]
