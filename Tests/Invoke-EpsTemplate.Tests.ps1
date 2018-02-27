@@ -363,6 +363,28 @@ function EpsTests {
 				Invoke-EpsTemplate -Template $Template -Binding $Binding | Should Be $ExpectedResult
 			}
 		}
+
+		Context "with custom helpers" {
+			$helpers = @{
+				Foo = { param($f) return "foo-$f" }
+				Bar = { param($p1, $p2) return "bar-$p1-$p2" }
+				NumberedList = { param($arr)                
+					$arr | foreach-object {$i=1} { "$i. $_"; $i++ } | out-string 
+				  }
+			}
+			It "expands single-arg helper function" {
+				Invoke-EpsTemplate -Template "<%= Foo bar %>" -helpers $helpers | Should Be "foo-bar"
+			}
+			It "expands multi-arg helper function" {
+				Invoke-EpsTemplate -Template "<%= Bar bar1 bar2 %>" -helpers $helpers | Should Be "bar-bar1-bar2"
+			}
+			It "expands array-arg helper function" {
+			Invoke-EpsTemplate -Template '<%= NumberedList "Dave", "Bob", "Alice" %>' -helpers $helpers | Should Be "1. Dave
+2. Bob
+3. Alice
+"
+			}
+		}
 	}	
 }
 

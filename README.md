@@ -311,6 +311,41 @@ Invoke-EpsTemplate -Template @'
 '@
 ```
 
+### Helper functions
+
+If there's a more complicated piece of powershell code that should be reused across multiple files, it can be encapsulated in a helper function, i.e.:
+
+```powershell
+$helpers = @{
+   NumberedList = { 
+     param($arr)
+     $i = 1
+     $arr | foreach-object { "$i. $_"; $i++ } | out-string 
+  }
+}
+```
+
+`$helpers` should be passed to `Invoke-Eps`:
+
+```
+Invoke-EpsTemplate -Path Test.eps -helpers $helpers
+```
+
+Now, `NumberedList` can be used in the template.
+
+```powershell
+<%= NumberedList "Dave", "Bob", "Alice" %>
+```
+
+would generate the following listing:
+
+```
+1. Dave
+2. Bob
+3. Alice
+
+```
+
 ## Contribution
 
 * Original version was written by [Dave Wu](https://github.com/straightdave).
