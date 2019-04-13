@@ -1,5 +1,10 @@
 # EPS Release History
 
+## 1.0.0 (2019-04-13)
+
+ * Escape consecutive double quotes in EXPRESSIONs [Kenneth Cochran]
+ * Add custom helper support [Jakub Pawłowski]
+
 ## 0.5.1 (2018-02-25)
 
  * Removed dead code (could not be called) [Dominique Broeglin]
