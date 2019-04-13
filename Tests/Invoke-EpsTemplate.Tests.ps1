@@ -382,9 +382,9 @@ function EpsTests {
 			$helpers = @{
 				Foo = { param($f) return "foo-$f" }
 				Bar = { param($p1, $p2) return "bar-$p1-$p2" }
-				NumberedList = { param($arr)                
-					$arr | foreach-object {$i=1} { "$i. $_"; $i++ } | out-string 
-				  }
+				NumberedList = { param($arr)
+					$arr | ForEach-Object {$i=1} { "$i. $_"; $i++ } | Out-String
+				}
 			}
 			It "expands single-arg helper function" {
 				Invoke-EpsTemplate -Template "<%= Foo bar %>" -helpers $helpers | Should Be "foo-bar"
@@ -393,11 +393,7 @@ function EpsTests {
 				Invoke-EpsTemplate -Template "<%= Bar bar1 bar2 %>" -helpers $helpers | Should Be "bar-bar1-bar2"
 			}
 			It "expands array-arg helper function" {
-				Invoke-EpsTemplate -Template '<%= NumberedList "Dave", "Bob", "Alice" %>' -helpers $helpers | Should Be @"
-1. Dave
-2. Bob
-3. Alice
-"@
+				Invoke-EpsTemplate -Template '<%= NumberedList "Dave", "Bob", "Alice" %>' -helpers $helpers | Should Be ("1. Dave", "2. Bob", "3. Alice" | Out-String)
 			}
 		}
 }	
