@@ -38,13 +38,13 @@ function Invoke-EpsTemplate {
 
         try {
             $powershell = [powershell]::Create()
-                        
+            
             foreach($h in $helpers.GetEnumerator()) {
                 $powershell = $powershell.AddScript("function $($h.key) { $($h.value) }")
             }
-            $powershell.`   
+            $powershell.`
                 AddScript("function Each { $function:Each }").`
-                AddScript("function Get-OrElse { ${function:Get-OrElse} }").`             
+                AddScript("function Get-OrElse { ${function:Get-OrElse} }").`
                 AddScript($block).`
                 AddParameter("Binding", $Binding).`
                 AddParameter("Script", $templateScriptBlock).`
