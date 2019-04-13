@@ -86,6 +86,20 @@ function EpsTests {
 		}
 	}
 
+	Context 'with template <%= "" %>' {
+		$Template = '<%= "" %>'
+		It 'escapes EXPRESSIONs properly when needed' {
+			Invoke-EpsTemplate -Template $Template | Should Be ""
+		}
+	}
+
+	Context 'with template <%= '''' %>' {
+		$Template = '<%= '''' %>'
+		It 'escapes EXPRESSIONs properly when needed' {
+			Invoke-EpsTemplate -Template $Template | Should Be ""
+		}
+	}
+
 	Context 'with template "Hello <%= $A %>!" and with -Binding' {
 		$Template = 'Hello <%= $A %>!'
 		BeforeEach {
@@ -379,13 +393,14 @@ function EpsTests {
 				Invoke-EpsTemplate -Template "<%= Bar bar1 bar2 %>" -helpers $helpers | Should Be "bar-bar1-bar2"
 			}
 			It "expands array-arg helper function" {
-			Invoke-EpsTemplate -Template '<%= NumberedList "Dave", "Bob", "Alice" %>' -helpers $helpers | Should Be "1. Dave
+				Invoke-EpsTemplate -Template '<%= NumberedList "Dave", "Bob", "Alice" %>' -helpers $helpers | Should Be @"
+1. Dave
 2. Bob
 3. Alice
-"
+"@
 			}
 		}
-	}	
+}	
 }
 
 Describe 'Invoke-EpsTemplate' {
