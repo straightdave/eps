@@ -38,7 +38,7 @@ function New-EpsTemplateScript {
         [void]$StringBuilder.`
             Append("`$sb.Append(`"`$(").`
             Append($Value.Replace('""', '`"`"')).`
-            Append(")`");") 
+            Append(" | Get-OrElse -Throw)`");") 
     }
 
     function Add-Code {
