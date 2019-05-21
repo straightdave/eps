@@ -2,7 +2,8 @@ function New-EpsTemplateScript {
     Param(
         [Parameter(Mandatory = $True)]
         [AllowEmptyString()]
-        [String]$Template
+        [String]$Template,
+        [switch]$ThrowForEmptyInsert
     )
     $position = 0
     $Pattern = [regex]("(?sm)(?<lit><%%|%%>)|" + 
@@ -34,11 +35,16 @@ function New-EpsTemplateScript {
 
     function Add-Expression {
         Param([String]$Value)
+        [string]$CloseExpression = ""
+        if($ThrowForEmptyInsert) {
+            $CloseExpression += " | Get-OrElse -Throw"
+        }
+        $CloseExpression += ")`");"
 
         [void]$StringBuilder.`
             Append("`$sb.Append(`"`$(").`
             Append($Value.Replace('""', '`"`"')).`
-            Append(" | Get-OrElse -Throw)`");") 
+            Append($CloseExpression) 
     }
 
     function Add-Code {

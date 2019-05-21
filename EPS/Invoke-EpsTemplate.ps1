@@ -13,7 +13,8 @@ function Invoke-EpsTemplate {
         [Hashtable]$Binding = @{},
         [Hashtable]$Helpers = @{},
 
-        [switch]$Safe
+        [switch]$Safe,
+        [switch]$ThrowForEmptyInsert
     )   
     
     if ($PSCmdlet.ParameterSetName -eq 'File template') {
@@ -25,7 +26,7 @@ function Invoke-EpsTemplate {
         $Template = [IO.File]::ReadAllText($rootedPath)
     }
 
-    $templateScriptBlock = New-EpsTemplateScript -Template $Template
+    $templateScriptBlock = New-EpsTemplateScript -Template $Template -ThrowForEmptyInsert:$ThrowForEmptyInsert
     Write-Verbose "Executing script @'`n$templateScriptBlock`n'@."
 
     if($Safe) {
