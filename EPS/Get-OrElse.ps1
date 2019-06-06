@@ -1,11 +1,13 @@
 function Get-OrElse {
     [CmdletBinding()]
     Param(
-        [Parameter(ValueFromPipeline = $True)]
+        [Parameter(ValueFromPipeline = $True,
+        Position=0)]
         [Object]$Value,
 
         [Parameter(Mandatory = $True,
-            ParameterSetName='Default')]
+            ParameterSetName='Default',
+            Position=1)]
         [Object]$Default,
         [Parameter(Mandatory = $True,
             ParameterSetName='Throw')]
