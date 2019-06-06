@@ -15,7 +15,6 @@ Describe 'Get-OrElse' {
             Get-OrElse 1   "default" | Should Be 1
             Get-OrElse " " "default" | Should Be " "
         }
-
     }
     Context 'with pipeline value' {
         It 'returns default if value is null' {
@@ -28,6 +27,18 @@ Describe 'Get-OrElse' {
             "a" | Get-OrElse -Default "default" | Should Be "a"
             1   | Get-OrElse -Default "default" | Should Be 1
             " " | Get-OrElse -Default "default" | Should Be " "
+        }
+    }
+    Context 'with throw option' {
+        It 'throws an error if the input is null' {
+            {$Null | Get-OrElse -Throw} | Should -Throw
+        }
+        It 'does not throw an error if the input is not null' {
+            {"default" | Get-OrElse -Throw} | Should -Not -Throw
+            {$False | Get-OrElse -Throw} | Should -Not -Throw
+        }
+        It 'returns the correct value' {
+            "default" | Get-OrElse -Throw | Should Be "default"
         }
     }
 }
