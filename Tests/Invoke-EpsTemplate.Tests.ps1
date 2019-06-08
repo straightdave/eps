@@ -407,9 +407,18 @@ function EpsTests {
                 {Invoke-EpsTemplate -Template '<% "" %>' -ThrowForEmptyInsert} | Should -Not -Throw
                 {Invoke-EpsTemplate -Template '<%%>' -ThrowForEmptyInsert} | Should -Not -Throw
             }
-            It "Evaluates to the correct value" {
+            It "evaluates to the correct value" {
                 Invoke-EpsTemplate -Template '<%= "something" %>' -ThrowForEmptyInsert | Should Be "something"
             }
+            It "does not throw for if statements" {
+               {Invoke-EpsTemplate -Template '<%= if ($true) {"true"} else {"false"} %>' -ThrowForEmptyInsert} | Should -Not -Throw
+               {Invoke-EpsTemplate -Template '<%= if ($true) {"true"} else {$null} %>' -ThrowForEmptyInsert} | Should -Not -Throw
+               {Invoke-EpsTemplate -Template '<%= if ($null) {$null} else {"false"} %>' -ThrowForEmptyInsert} | Should -Not -Throw
+            }
+            It "does throw for if statements that evaluate to empty" {
+               {Invoke-EpsTemplate -Template '<%= if ($true) {$null} else {$null} %>' -ThrowForEmptyInsert} | Should -Throw
+               {Invoke-EpsTemplate -Template '<%= if ($true) {""} else {""} %>' -ThrowForEmptyInsert} | Should -Throw
+               {Invoke-EpsTemplate -Template '<%= if ($null) {""} else {""} %>' -ThrowForEmptyInsert} | Should -Throw            }
         }
 }	
 }
