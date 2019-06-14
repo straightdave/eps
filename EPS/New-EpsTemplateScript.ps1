@@ -35,16 +35,15 @@ function New-EpsTemplateScript {
 
     function Add-Expression {
         Param([String]$Value)
-        [string]$CloseExpression = ""
-        if($ThrowForEmptyInsert) {
-            $CloseExpression += " | Get-OrElse -Throw"
-        }
-        $CloseExpression += ")`");"
+
+        $Value = if ($ThrowForEmptyInsert) {
+           '$(' + $Value + ') | Get-OrElse -Throw'
+        } else {$Value}
 
         [void]$StringBuilder.`
             Append("`$sb.Append(`"`$(").`
             Append($Value.Replace('""', '`"`"')).`
-            Append($CloseExpression) 
+            Append(")`");")
     }
 
     function Add-Code {

@@ -396,6 +396,30 @@ function EpsTests {
 				Invoke-EpsTemplate -Template '<%= NumberedList "Dave", "Bob", "Alice" %>' -helpers $helpers | Should Be ("1. Dave", "2. Bob", "3. Alice" | Out-String)
 			}
 		}
+        Context "with ThrowForEmptyInsert" {
+            It "throws when an insert expression evaluates to empty" {
+                {Invoke-EpsTemplate -Template '<%= $null %>' -ThrowForEmptyInsert} | Should -Throw
+                {Invoke-EpsTemplate -Template '<%= "" %>' -ThrowForEmptyInsert} | Should -Throw
+                {Invoke-EpsTemplate -Template '<%=%>' -ThrowForEmptyInsert} | Should -Throw
+            }
+            It "does not throw when expression is not being inserted" {
+                {Invoke-EpsTemplate -Template '<% $null %>' -ThrowForEmptyInsert} | Should -Not -Throw
+                {Invoke-EpsTemplate -Template '<% "" %>' -ThrowForEmptyInsert} | Should -Not -Throw
+                {Invoke-EpsTemplate -Template '<%%>' -ThrowForEmptyInsert} | Should -Not -Throw
+            }
+            It "evaluates to the correct value" {
+                Invoke-EpsTemplate -Template '<%= "something" %>' -ThrowForEmptyInsert | Should Be "something"
+            }
+            It "does not throw for if statements" {
+               {Invoke-EpsTemplate -Template '<%= if ($true) {"true"} else {"false"} %>' -ThrowForEmptyInsert} | Should -Not -Throw
+               {Invoke-EpsTemplate -Template '<%= if ($true) {"true"} else {$null} %>' -ThrowForEmptyInsert} | Should -Not -Throw
+               {Invoke-EpsTemplate -Template '<%= if ($null) {$null} else {"false"} %>' -ThrowForEmptyInsert} | Should -Not -Throw
+            }
+            It "does throw for if statements that evaluate to empty" {
+               {Invoke-EpsTemplate -Template '<%= if ($true) {$null} else {$null} %>' -ThrowForEmptyInsert} | Should -Throw
+               {Invoke-EpsTemplate -Template '<%= if ($true) {""} else {""} %>' -ThrowForEmptyInsert} | Should -Throw
+               {Invoke-EpsTemplate -Template '<%= if ($null) {""} else {""} %>' -ThrowForEmptyInsert} | Should -Throw            }
+        }
 }	
 }
 

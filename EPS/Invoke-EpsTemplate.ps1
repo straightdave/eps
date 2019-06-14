@@ -34,7 +34,11 @@ function Invoke-EpsTemplate {
             Param([ScriptBlock]$Script, [Hashtable]$Binding)
 
             $Binding.GetEnumerator() | ForEach-Object { New-Variable -Name $_.Key -Value $_.Value }
-            $Script.Invoke()
+            try {
+                $Script.Invoke()
+            } catch {
+                throw $_
+            }
         }
 
         try {
